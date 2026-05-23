@@ -1,0 +1,1317 @@
+/* ================================================================
+   DATPOS — Modern Dark Theme (additive override)
+   ----------------------------------------------------------------
+   Capa de tema visual encima de Site.css, MenuVer.css, Modern-UI.css.
+   - Sidebar oscuro (navy)
+   - KPIs limpios con barras horizontales
+   - Modales unificados con header/footer
+   - Botones, inputs, tablas y badges consistentes
+   No reemplaza estilos de comportamiento (DataTables, JS) ni IDs.
+   ================================================================ */
+
+:root {
+    --dp-sidebar-bg: #111827;
+    --dp-sidebar-bg-strong: #0b1220;
+    --dp-sidebar-bg-soft: #1f2937;
+    --dp-sidebar-text: #cbd5e1;
+    --dp-sidebar-text-strong: #ffffff;
+    --dp-sidebar-text-muted: #94a3b8;
+    --dp-sidebar-divider: rgba(255, 255, 255, 0.06);
+    --dp-primary: #228ac9;
+    --dp-primary-soft: #4BBCF4;
+    --dp-primary-strong: #145f8a;
+    --dp-accent: #21b5d6;
+    --dp-bg: #f4f7fb;
+    --dp-card: #ffffff;
+    --dp-text: #1f3a52;
+    --dp-text-secondary: #5b6f81;
+    --dp-text-muted: #8a9aab;
+    --dp-border: #e5edf5;
+    --dp-border-strong: #cfdce8;
+    --dp-shadow-sm: 0 1px 2px rgba(15, 42, 67, 0.06);
+    --dp-shadow-md: 0 6px 18px rgba(15, 42, 67, 0.08);
+    --dp-shadow-lg: 0 16px 32px rgba(15, 42, 67, 0.12);
+    --dp-radius: 12px;
+    --dp-radius-sm: 8px;
+    --dp-success: #16a34a;
+    --dp-success-soft: #dcfce7;
+    --dp-warning: #d97706;
+    --dp-warning-soft: #fef3c7;
+    --dp-danger: #dc2626;
+    --dp-danger-soft: #fee2e2;
+}
+
+/* =========================================================
+   1. SIDEBAR — Dark navy con texto blanco
+   ========================================================= */
+#menuver,
+.nav-side-menu {
+    background-color: var(--dp-sidebar-bg) !important;
+    color: var(--dp-sidebar-text) !important;
+    border-right: 1px solid var(--dp-sidebar-divider) !important;
+    box-shadow: 2px 0 20px rgba(0, 0, 0, 0.18);
+}
+
+/* Logo header */
+#menuver .brand.c-logo-menu,
+.nav-side-menu .brand.c-logo-menu {
+    background-color: var(--dp-sidebar-bg-strong) !important;
+    border-bottom: 1px solid var(--dp-sidebar-divider) !important;
+    color: #fff !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    height: 56px !important;
+}
+
+#menuver .brand.c-logo-menu label,
+.nav-side-menu .brand.c-logo-menu label {
+    color: #fff !important;
+    font-family: 'Inter', sans-serif !important;
+    font-weight: 700 !important;
+    letter-spacing: 2px !important;
+    font-size: 16px !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    line-height: 1 !important;
+}
+
+#menuver .brand.c-logo-menu img,
+.nav-side-menu .brand.c-logo-menu img {
+    position: static !important;
+    margin: 0 !important;
+    width: 28px !important;
+    padding: 0 !important;
+}
+
+/* Toggle button (hamburger inside sidebar) */
+#menuver .toggle-btn,
+.nav-side-menu .toggle-btn {
+    color: var(--dp-sidebar-text-muted) !important;
+    background: transparent !important;
+}
+
+/* List items */
+#menu-content,
+#Ul1,
+.nav-side-menu .menu-content {
+    background: transparent !important;
+}
+
+#menu-content > li,
+#Ul1 > li,
+.nav-side-menu ul li {
+    border-bottom: 1px solid var(--dp-sidebar-divider) !important;
+    border-left: none !important;
+    background: transparent !important;
+    transition: background-color 0.18s ease, color 0.18s ease;
+    height: auto !important;
+    min-height: 44px !important;
+    position: relative !important;
+    padding: 0 !important;
+}
+
+/* sub-menu li doesn't need a divider on top */
+.nav-side-menu .sub-menu li {
+    border-bottom: 1px solid rgba(255,255,255,0.04) !important;
+    background: transparent !important;
+    height: auto !important;
+    min-height: 36px !important;
+}
+
+#menu-content > li > a,
+#Ul1 > li > a,
+.nav-side-menu ul li a {
+    color: var(--dp-sidebar-text) !important;
+    font-family: 'Inter', sans-serif !important;
+    font-weight: 500 !important;
+    letter-spacing: 0.4px !important;
+    text-transform: uppercase !important;
+    font-size: 12.5px !important;
+    padding: 14px 18px 14px 56px !important;
+    display: flex !important;
+    align-items: center !important;
+    height: auto !important;
+    line-height: 1.2 !important;
+    position: relative !important;
+}
+
+#menu-content > li > a img,
+#Ul1 > li > a img,
+.nav-side-menu ul li a img {
+    position: absolute !important;
+    left: 18px !important;
+    top: 50% !important;
+    transform: translateY(-50%) !important;
+    width: 22px !important;
+    height: 22px !important;
+    filter: brightness(0) invert(1) !important;
+    opacity: 0.88 !important;
+}
+
+#menu-content > li > a .material-icons,
+#Ul1 > li > a .material-icons,
+.nav-side-menu ul li a .material-icons {
+    position: absolute !important;
+    left: 18px !important;
+    top: 50% !important;
+    transform: translateY(-50%) !important;
+    font-size: 22px !important;
+    color: var(--dp-sidebar-text) !important;
+}
+
+#menu-content > li:hover,
+#Ul1 > li:hover,
+.nav-side-menu ul li:hover {
+    background-color: var(--dp-sidebar-bg-soft) !important;
+}
+
+#menu-content > li:hover > a,
+#Ul1 > li:hover > a,
+.nav-side-menu ul li:hover a {
+    color: #fff !important;
+    padding-left: 56px !important;
+}
+
+#menu-content > li:hover > a img,
+#Ul1 > li:hover > a img,
+.nav-side-menu ul li:hover a img {
+    opacity: 1 !important;
+    left: 18px !important;
+}
+
+/* Active / current item */
+#menu-content > li.active,
+.nav-side-menu ul li.active {
+    background-color: var(--dp-sidebar-bg-soft) !important;
+    border-left: 3px solid var(--dp-primary) !important;
+    padding-left: 0 !important;
+}
+
+#menu-content > li.active > a,
+#menu-content > li.dp-active > a,
+.nav-side-menu ul li.active a {
+    color: #fff !important;
+    background: transparent !important;
+}
+
+#menu-content > li.dp-active {
+    background-color: var(--dp-sidebar-bg-soft) !important;
+    border-left: 3px solid var(--dp-primary) !important;
+}
+
+#menu-content > li.dp-active > a .material-icons {
+    color: var(--dp-primary-soft) !important;
+}
+
+/* Remove the original yellow arrow chevrons (left-side triangles + bottom strip) */
+.nav-side-menu ul li:before,
+.nav-side-menu ul li:after {
+    display: none !important;
+}
+.nav-side-menu ul .sub-menu li:before,
+.nav-side-menu ul .sub-menu li:after,
+.nav-side-menu li .sub-menu li:before,
+.nav-side-menu li .sub-menu li:after {
+    display: none !important;
+}
+
+/* Add a chevron on the right side of TOP-level collapsible items, rotates with state */
+#menu-content > li[data-toggle="collapse"] > a {
+    padding-right: 38px !important;
+    position: relative !important;
+}
+#menu-content > li[data-toggle="collapse"] > a:after {
+    content: 'expand_more';
+    font-family: 'Material Icons';
+    font-weight: normal;
+    font-style: normal;
+    font-size: 18px;
+    line-height: 1;
+    letter-spacing: normal;
+    text-transform: none;
+    display: inline-block;
+    white-space: nowrap;
+    word-wrap: normal;
+    direction: ltr;
+    -webkit-font-feature-settings: 'liga';
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    font-feature-settings: 'liga';
+    color: var(--dp-sidebar-text-muted);
+    position: absolute;
+    right: 14px;
+    top: 50%;
+    transform: translateY(-50%) rotate(0deg);
+    transition: transform 0.22s ease, color 0.22s ease;
+    opacity: 0.78;
+}
+/* When collapsed (Bootstrap adds .collapsed on the trigger when CLOSED) */
+#menu-content > li[data-toggle="collapse"].collapsed > a:after {
+    transform: translateY(-50%) rotate(-90deg);
+}
+#menu-content > li[data-toggle="collapse"]:not(.collapsed) > a:after {
+    color: var(--dp-primary-soft) !important;
+    opacity: 1;
+}
+#menu-content > li[data-toggle="collapse"]:not(.collapsed) {
+    background-color: rgba(34,138,201,0.10) !important;
+    border-left: 3px solid var(--dp-primary) !important;
+}
+#menu-content > li[data-toggle="collapse"]:not(.collapsed) > a {
+    color: #fff !important;
+}
+
+/* Sub-menus (cascaded) — first level (sections inside modules) */
+.nav-side-menu .sub-menu {
+    background-color: var(--dp-sidebar-bg-strong) !important;
+    box-shadow: inset 0 4px 6px -4px rgba(0,0,0,0.35), inset 0 -4px 6px -4px rgba(0,0,0,0.15) !important;
+    border: none !important;
+    padding: 4px 0 6px !important;
+    margin: 0 !important;
+    list-style: none !important;
+}
+
+.nav-side-menu .sub-menu li {
+    background: transparent !important;
+    border-left: none !important;
+}
+
+.nav-side-menu .sub-menu li a {
+    color: var(--dp-sidebar-text-muted) !important;
+    text-transform: none !important;
+    font-size: 13px !important;
+    font-weight: 500 !important;
+    padding: 10px 18px 10px 56px !important;
+    letter-spacing: 0.02em !important;
+    display: flex !important;
+    align-items: center !important;
+    height: auto !important;
+    line-height: 1.3 !important;
+    transition: background 0.15s ease, color 0.15s ease, padding-left 0.15s ease;
+}
+
+.nav-side-menu .sub-menu li a img {
+    filter: brightness(0) invert(1) !important;
+    opacity: 0.55 !important;
+    width: 14px !important;
+    height: 14px !important;
+    margin-right: 4px !important;
+    position: absolute !important;
+    left: 34px !important;
+    top: 50% !important;
+    transform: translateY(-50%) !important;
+}
+
+.nav-side-menu .sub-menu li:hover {
+    background-color: rgba(255,255,255,0.04) !important;
+}
+.nav-side-menu .sub-menu li:hover a {
+    color: #fff !important;
+    padding-left: 60px !important;
+}
+.nav-side-menu .sub-menu li:hover a img {
+    opacity: 0.9 !important;
+    left: 38px !important;
+}
+
+/* Second-level sub-menu inside .sub-menu (most-inner items) */
+.nav-side-menu .sub-menu .sub-menu {
+    background-color: rgba(0,0,0,0.18) !important;
+    box-shadow: none !important;
+}
+.nav-side-menu .sub-menu .sub-menu li a {
+    padding-left: 76px !important;
+    font-size: 12.5px !important;
+    color: rgba(203,213,225,0.78) !important;
+}
+.nav-side-menu .sub-menu .sub-menu li a img {
+    left: 54px !important;
+}
+.nav-side-menu .sub-menu .sub-menu li:hover a {
+    padding-left: 80px !important;
+}
+.nav-side-menu .sub-menu .sub-menu li:hover a img {
+    left: 58px !important;
+}
+
+/* Bootstrap collapse animation hook (no visual artifact during open/close) */
+.nav-side-menu .sub-menu.collapse:not(.in) { display: none !important; }
+.nav-side-menu .sub-menu.collapsing {
+    overflow: hidden !important;
+    transition: height 0.28s ease !important;
+}
+.nav-side-menu .sub-menu.in { display: block !important; }
+
+/* =========================================================
+   2. HEADER (top bar) — más limpio
+   ========================================================= */
+div.c-content header {
+    background-color: #fff !important;
+    border-bottom: 1px solid var(--dp-border) !important;
+    box-shadow: 0 1px 0 rgba(0, 0, 0, 0.03) !important;
+}
+
+div.c-content header span.c-menu-toggle:before {
+    background-color: #475569 !important;
+    box-shadow: 0px -7px 0px #475569, 0px 7px 0px #475569 !important;
+}
+
+header span.header-title {
+    color: var(--dp-text) !important;
+    font-family: 'Inter', sans-serif !important;
+    font-weight: 600 !important;
+}
+
+/* =========================================================
+   3. DASHBOARD — KPI cards, filtros, tabs, barras
+   ========================================================= */
+
+/* Page header chip ya viene con Modern-UI.css — refinamos */
+.modern-page-header {
+    background: #fff !important;
+    border-left: 4px solid var(--dp-primary) !important;
+    box-shadow: var(--dp-shadow-sm) !important;
+}
+
+/* Tabs — línea inferior activa, sin botones cuadrados */
+.modern-page .nav-tabs,
+.nav-tabs.dp-tabs {
+    border-bottom: 1px solid var(--dp-border) !important;
+    margin-bottom: 16px !important;
+    padding-left: 4px !important;
+    display: flex !important;
+    flex-wrap: wrap !important;
+    gap: 4px !important;
+}
+
+.modern-page .nav-tabs > li,
+.nav-tabs.dp-tabs > li {
+    margin-bottom: -1px !important;
+    float: none !important;
+}
+
+.modern-page .nav-tabs > li > a,
+.nav-tabs.dp-tabs > li > a {
+    background: transparent !important;
+    border: none !important;
+    border-bottom: 2px solid transparent !important;
+    border-radius: 0 !important;
+    color: var(--dp-text-secondary) !important;
+    font-family: 'Inter', sans-serif !important;
+    font-weight: 500 !important;
+    font-size: 14px !important;
+    padding: 10px 16px !important;
+    margin: 0 !important;
+    transition: color 0.18s ease, border-color 0.18s ease, background-color 0.18s ease;
+}
+
+.modern-page .nav-tabs > li > a:hover,
+.nav-tabs.dp-tabs > li > a:hover {
+    color: var(--dp-primary) !important;
+    background: #f8fafc !important;
+    border-bottom-color: transparent !important;
+}
+
+.modern-page .nav-tabs > li.active > a,
+.modern-page .nav-tabs > li.active > a:focus,
+.modern-page .nav-tabs > li.active > a:hover,
+.nav-tabs.dp-tabs > li.active > a {
+    background: transparent !important;
+    color: var(--dp-primary) !important;
+    border: none !important;
+    border-bottom: 2px solid var(--dp-primary) !important;
+    border-top: none !important;
+    font-weight: 600 !important;
+}
+
+/* KPI cards */
+.dp-kpi-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 16px;
+    margin: 16px 0 24px;
+}
+
+.dp-kpi-card {
+    background: var(--dp-card);
+    border: 1px solid var(--dp-border);
+    border-radius: var(--dp-radius);
+    padding: 18px 18px 16px;
+    box-shadow: var(--dp-shadow-sm);
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+    overflow: hidden;
+    transition: transform 0.18s ease, box-shadow 0.18s ease;
+}
+
+.dp-kpi-card:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--dp-shadow-md);
+}
+
+.dp-kpi-card .dp-kpi-icon {
+    flex: 0 0 48px;
+    width: 48px;
+    height: 48px;
+    border-radius: 12px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+    box-shadow: 0 6px 16px rgba(15, 42, 67, 0.18);
+}
+
+.dp-kpi-card .dp-kpi-icon .material-icons {
+    font-size: 26px;
+    color: #fff;
+    line-height: 1;
+}
+
+.dp-kpi-card .dp-kpi-body {
+    flex: 1 1 auto;
+    min-width: 0;
+}
+
+.dp-kpi-card .dp-kpi-label {
+    color: var(--dp-text-muted);
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    margin: 0 0 6px;
+    line-height: 1.2;
+}
+
+.dp-kpi-card .dp-kpi-value {
+    color: var(--dp-text);
+    font-size: 26px;
+    font-weight: 700;
+    line-height: 1.1;
+    margin: 0;
+    font-family: 'Inter', sans-serif;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.dp-kpi-card .dp-kpi-delta {
+    margin-top: 6px;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--dp-text-muted);
+}
+
+.dp-kpi-card .dp-kpi-delta.is-up { color: var(--dp-success); }
+.dp-kpi-card .dp-kpi-delta.is-down { color: var(--dp-danger); }
+
+/* Color variants */
+.dp-kpi-card[data-color="blue"] .dp-kpi-icon { background: linear-gradient(135deg, #4BBCF4 0%, #228ac9 100%); }
+.dp-kpi-card[data-color="teal"] .dp-kpi-icon { background: linear-gradient(135deg, #61C0BF 0%, #2fa39f 100%); }
+.dp-kpi-card[data-color="amber"] .dp-kpi-icon { background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); }
+.dp-kpi-card[data-color="green"] .dp-kpi-icon { background: linear-gradient(135deg, #34d399 0%, #16a34a 100%); }
+.dp-kpi-card[data-color="violet"] .dp-kpi-icon { background: linear-gradient(135deg, #a78bfa 0%, #7c3aed 100%); }
+
+/* Filters toolbar */
+.dp-filters {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    gap: 14px;
+    padding: 14px 16px;
+    background: #fff;
+    border: 1px solid var(--dp-border);
+    border-radius: var(--dp-radius);
+    box-shadow: var(--dp-shadow-sm);
+    margin-bottom: 18px;
+}
+
+.dp-filter {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    min-width: 180px;
+    flex: 1 1 200px;
+}
+
+.dp-filter label {
+    color: var(--dp-text-muted);
+    font-size: 11.5px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    margin: 0;
+}
+
+.dp-filter input,
+.dp-filter select,
+.dp-filter .form-control {
+    background: #f8fafc !important;
+    border: 1px solid var(--dp-border-strong) !important;
+    border-radius: var(--dp-radius-sm) !important;
+    color: var(--dp-text) !important;
+    font-size: 13.5px !important;
+    padding: 8px 12px !important;
+    height: 38px !important;
+    width: 100% !important;
+    box-shadow: none !important;
+}
+
+.dp-filter input:focus,
+.dp-filter select:focus,
+.dp-filter .form-control:focus {
+    border-color: var(--dp-primary) !important;
+    background: #fff !important;
+    box-shadow: 0 0 0 3px rgba(34, 138, 201, 0.18) !important;
+}
+
+.dp-filter-actions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-left: auto;
+    align-self: flex-end;
+    padding-bottom: 1px;
+}
+
+.dp-btn-icon {
+    border: none;
+    width: 38px;
+    height: 38px;
+    border-radius: var(--dp-radius-sm);
+    color: #fff;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: transform 0.15s ease, box-shadow 0.15s ease, opacity 0.15s ease;
+    text-decoration: none !important;
+    flex: 0 0 38px;
+}
+
+.dp-btn-icon .material-icons {
+    color: #fff !important;
+    font-size: 22px;
+}
+
+.dp-btn-icon:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 6px 14px rgba(15, 42, 67, 0.18);
+}
+
+.dp-btn-icon.is-warning { background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); }
+.dp-btn-icon.is-accent  { background: linear-gradient(135deg, #38bdf8 0%, #0ea5e9 100%); }
+.dp-btn-icon.is-primary { background: linear-gradient(135deg, #4BBCF4 0%, #228ac9 100%); }
+
+/* Section card with bars */
+.dp-section {
+    background: #fff;
+    border: 1px solid var(--dp-border);
+    border-radius: var(--dp-radius);
+    box-shadow: var(--dp-shadow-sm);
+    padding: 18px 20px 22px;
+    overflow: hidden;
+}
+
+.dp-section + .dp-section { margin-top: 16px; }
+
+.dp-section-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 14px;
+}
+
+.dp-section-title {
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--dp-text);
+    margin: 0;
+    font-family: 'Inter', sans-serif;
+}
+
+.dp-section-link {
+    color: var(--dp-primary) !important;
+    background: #eaf4fb;
+    border-radius: 999px;
+    padding: 4px 12px;
+    font-size: 12px;
+    font-weight: 600;
+    text-decoration: none !important;
+    transition: background 0.18s ease;
+}
+
+.dp-section-link:hover {
+    background: #d6ebf7;
+}
+
+.dp-bars { display: flex; flex-direction: column; gap: 14px; }
+
+.dp-bar {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    grid-template-rows: auto auto;
+    gap: 4px 12px;
+    align-items: center;
+}
+
+.dp-bar-label {
+    color: var(--dp-text);
+    font-size: 13.5px;
+    font-weight: 600;
+    grid-column: 1 / 2;
+    grid-row: 1 / 2;
+}
+
+.dp-bar-amount {
+    color: var(--dp-text);
+    font-size: 13.5px;
+    font-weight: 700;
+    grid-column: 2 / 3;
+    grid-row: 1 / 2;
+    white-space: nowrap;
+    text-align: right;
+}
+
+.dp-bar-track {
+    grid-column: 1 / 3;
+    grid-row: 2 / 3;
+    height: 8px;
+    background: #eef2f7;
+    border-radius: 999px;
+    overflow: hidden;
+}
+
+.dp-bar-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #4BBCF4 0%, #228ac9 100%);
+    border-radius: 999px;
+    transition: width 0.5s ease;
+}
+
+.dp-bars-empty {
+    color: var(--dp-text-muted);
+    text-align: center;
+    padding: 32px 0;
+    font-size: 13px;
+}
+
+/* Dashboard split row */
+.dp-dashboard-split {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin-top: 18px;
+}
+
+@media (max-width: 991px) {
+    .dp-dashboard-split { grid-template-columns: 1fr; }
+}
+
+/* =========================================================
+   4. MODALES — header/body/footer consistente
+   ========================================================= */
+.modal-backdrop {
+    background-color: #0b1220 !important;
+    opacity: 0.55 !important;
+}
+
+.modal-content {
+    border: 1px solid var(--dp-border) !important;
+    border-radius: 14px !important;
+    box-shadow: 0 24px 60px rgba(15, 42, 67, 0.28) !important;
+    overflow: hidden;
+}
+
+.modal-header {
+    background: #fff !important;
+    border-bottom: 1px solid var(--dp-border) !important;
+    padding: 14px 20px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+}
+
+.modal-header .modal-title,
+.modal-header h3,
+.modal-header h4 {
+    color: var(--dp-text) !important;
+    font-family: 'Inter', sans-serif !important;
+    font-size: 16px !important;
+    font-weight: 700 !important;
+    margin: 0 !important;
+}
+
+.modal-header .close,
+.modal-header button.close {
+    color: var(--dp-text-secondary) !important;
+    opacity: 0.7 !important;
+    text-shadow: none !important;
+    font-size: 24px !important;
+    line-height: 1 !important;
+    background: transparent !important;
+    border: none !important;
+    margin: 0 !important;
+    padding: 4px 8px !important;
+    border-radius: 6px !important;
+    cursor: pointer !important;
+    transition: background 0.15s ease, opacity 0.15s ease;
+}
+
+.modal-header .close:hover {
+    opacity: 1 !important;
+    background: #f1f5f9 !important;
+}
+
+.modal-body {
+    padding: 18px 20px !important;
+    color: var(--dp-text) !important;
+}
+
+.modal-footer {
+    background: #f8fafc !important;
+    border-top: 1px solid var(--dp-border) !important;
+    padding: 12px 20px !important;
+    display: flex !important;
+    justify-content: flex-end !important;
+    gap: 8px !important;
+}
+
+.modal-footer .btn { margin: 0 !important; }
+
+/* =========================================================
+   5. BOTONES, INPUTS, TABLAS, BADGES
+   ========================================================= */
+
+/* Buttons (Bootstrap overrides) */
+.btn {
+    border-radius: 8px !important;
+    font-family: 'Inter', sans-serif !important;
+    font-weight: 600 !important;
+    transition: transform 0.15s ease, box-shadow 0.15s ease, background-color 0.15s ease;
+}
+
+.btn-primary,
+.btn.btn-primary {
+    background-color: var(--dp-primary) !important;
+    border-color: var(--dp-primary) !important;
+    color: #fff !important;
+    box-shadow: 0 2px 6px rgba(34, 138, 201, 0.2);
+}
+
+.btn-primary:hover,
+.btn.btn-primary:hover,
+.btn-primary:focus,
+.btn.btn-primary:focus {
+    background-color: var(--dp-primary-strong) !important;
+    border-color: var(--dp-primary-strong) !important;
+    transform: translateY(-1px);
+    box-shadow: 0 6px 14px rgba(34, 138, 201, 0.28);
+}
+
+.btn-secondary,
+.btn.btn-secondary,
+.btn-default,
+.btn.btn-default {
+    background-color: transparent !important;
+    border: 1px solid var(--dp-border-strong) !important;
+    color: var(--dp-text) !important;
+    box-shadow: none !important;
+}
+
+.btn-secondary:hover,
+.btn.btn-secondary:hover,
+.btn-default:hover,
+.btn.btn-default:hover {
+    background-color: #f1f5f9 !important;
+    border-color: var(--dp-primary) !important;
+    color: var(--dp-primary) !important;
+}
+
+/* Inputs */
+.form-control,
+input[type="text"],
+input[type="number"],
+input[type="date"],
+input[type="password"],
+input[type="email"],
+select,
+textarea {
+    border-radius: 8px !important;
+    border: 1px solid var(--dp-border-strong) !important;
+    background-color: #fff !important;
+    color: var(--dp-text) !important;
+    font-family: 'Inter', sans-serif !important;
+    transition: border-color 0.18s ease, box-shadow 0.18s ease;
+}
+
+.form-control:focus,
+input:focus,
+select:focus,
+textarea:focus {
+    border-color: var(--dp-primary) !important;
+    box-shadow: 0 0 0 3px rgba(34, 138, 201, 0.18) !important;
+    outline: none !important;
+}
+
+/* DataTables / generic tables */
+table.dataTable,
+.table {
+    border-collapse: separate !important;
+    border-spacing: 0 !important;
+    border: 1px solid var(--dp-border) !important;
+    border-radius: var(--dp-radius-sm) !important;
+    overflow: hidden !important;
+    font-family: 'Inter', sans-serif !important;
+}
+
+table.dataTable thead th,
+.table thead th {
+    background: #f8fafc !important;
+    color: var(--dp-text-secondary) !important;
+    font-weight: 700 !important;
+    font-size: 12.5px !important;
+    text-transform: uppercase !important;
+    letter-spacing: 0.04em !important;
+    border-bottom: 1px solid var(--dp-border) !important;
+    padding: 12px 14px !important;
+}
+
+table.dataTable tbody td,
+.table tbody td {
+    border-bottom: 1px solid var(--dp-border) !important;
+    padding: 12px 14px !important;
+    color: var(--dp-text) !important;
+    font-size: 13.5px !important;
+    vertical-align: middle !important;
+    background: #fff !important;
+}
+
+table.dataTable tbody tr:nth-child(even) td,
+.table.table-striped tbody tr:nth-child(even) td {
+    background: #fbfdff !important;
+}
+
+table.dataTable tbody tr:hover td,
+.table tbody tr:hover td {
+    background: #f1f5f9 !important;
+}
+
+/* Badges */
+.dp-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 4px 10px;
+    border-radius: 999px;
+    font-size: 11.5px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    font-family: 'Inter', sans-serif;
+}
+
+.dp-badge.is-success {
+    background: var(--dp-success-soft);
+    color: var(--dp-success);
+}
+
+.dp-badge.is-warning {
+    background: var(--dp-warning-soft);
+    color: var(--dp-warning);
+}
+
+.dp-badge.is-danger {
+    background: var(--dp-danger-soft);
+    color: var(--dp-danger);
+}
+
+.dp-badge.is-neutral {
+    background: #f1f5f9;
+    color: var(--dp-text-secondary);
+}
+
+/* =========================================================
+   6. CONTAINER de página
+   ========================================================= */
+div.c-content {
+    background-color: var(--dp-bg) !important;
+    box-shadow: none !important;
+}
+
+.c-content-center {
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+    padding: 0 16px !important;
+}
+
+/* Body font */
+body, .modern-page, .modern-page * {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+/* Hide the old DiagramaPastel containers in case they remain */
+.dp-hidden { display: none !important; }
+
+/* =========================================================
+   7. GLOBAL PAGE THEME (override Modern-UI.css + Site.css)
+   ========================================================= */
+
+/* Background del workspace */
+html, body { background-color: var(--dp-bg) !important; }
+
+/* Cabecera de página (modern-page-header) — refinada */
+.modern-page .modern-page-header {
+    background: #fff !important;
+    border: 1px solid var(--dp-border) !important;
+    border-left: 4px solid var(--dp-primary) !important;
+    border-radius: var(--dp-radius) !important;
+    box-shadow: var(--dp-shadow-sm) !important;
+    margin: 4px 0 18px !important;
+    padding: 16px 22px !important;
+}
+
+.modern-page .modern-page-header .mph-icon {
+    background: linear-gradient(135deg, var(--dp-primary-soft) 0%, var(--dp-primary) 100%) !important;
+    box-shadow: 0 6px 16px rgba(34, 138, 201, 0.32) !important;
+    border-radius: 12px !important;
+    width: 46px !important;
+    height: 46px !important;
+    flex: 0 0 46px !important;
+}
+
+.modern-page .modern-page-header h1 {
+    font-family: 'Inter', sans-serif !important;
+    font-weight: 700 !important;
+    font-size: 18px !important;
+    color: var(--dp-text) !important;
+}
+
+.modern-page .modern-page-header p {
+    color: var(--dp-text-secondary) !important;
+    font-size: 13px !important;
+    margin-top: 2px !important;
+}
+
+.modern-page .modern-page-header .mph-chip {
+    background: #eaf4fb !important;
+    color: var(--dp-primary-strong) !important;
+    border-radius: 999px !important;
+    font-weight: 600 !important;
+    font-size: 12px !important;
+    padding: 5px 12px !important;
+}
+
+/* Sección titular (modern-section-title) */
+.modern-page .modern-section-title {
+    color: var(--dp-text) !important;
+    text-transform: uppercase !important;
+    letter-spacing: 0.05em !important;
+    font-size: 13px !important;
+    font-weight: 700 !important;
+    border-bottom: 2px solid var(--dp-border) !important;
+    padding: 6px 0 10px !important;
+    margin: 22px 0 16px !important;
+}
+
+.modern-page .modern-section-title .material-icons {
+    color: var(--dp-primary) !important;
+    font-size: 18px !important;
+}
+
+/* Tabs inline-style override (override pages que aún tienen `tabcito`) */
+.modern-page .nav-tabs > li > a.tabcito,
+.nav-tabs > li > a.tabcito {
+    color: var(--dp-text-secondary) !important;
+    font-size: 14px !important;
+    font-family: 'Inter', sans-serif !important;
+    font-weight: 500 !important;
+}
+
+.modern-page .nav-tabs > li.active > a.tabcito,
+.nav-tabs > li.active > a.tabcito {
+    color: var(--dp-primary) !important;
+    font-weight: 600 !important;
+}
+
+/* Tab-content card frame: convierte el contenido bajo tabs en una card */
+.modern-page .tab-content {
+    background: #fff !important;
+    border: 1px solid var(--dp-border) !important;
+    border-top: none !important;
+    border-radius: 0 0 var(--dp-radius) var(--dp-radius) !important;
+    padding: 20px !important;
+    box-shadow: var(--dp-shadow-sm) !important;
+}
+
+.modern-page .nav-tabs + .tab-content {
+    margin-top: -1px !important;
+}
+
+/* Form labels (.moderno_lb / col-sm-* label) */
+.modern-page .moderno_lb,
+.modern-page label.col-sm-2,
+.modern-page label.col-sm-3,
+.modern-page label.col-sm-4 {
+    color: var(--dp-text-secondary) !important;
+    font-family: 'Inter', sans-serif !important;
+    font-size: 12.5px !important;
+    font-weight: 600 !important;
+    letter-spacing: 0.02em !important;
+    text-transform: uppercase !important;
+    line-height: 1.4 !important;
+    padding-top: 8px !important;
+}
+
+/* Form inputs (.moderno_tb) */
+.modern-page .moderno_tb,
+.modern-page .form-control.moderno_tb,
+.modern-page input.form-control,
+.modern-page select.form-control,
+.modern-page textarea.form-control {
+    background: #f8fafc !important;
+    border: 1px solid var(--dp-border-strong) !important;
+    border-radius: var(--dp-radius-sm) !important;
+    color: var(--dp-text) !important;
+    font-family: 'Inter', sans-serif !important;
+    font-size: 13.5px !important;
+    height: 38px !important;
+    padding: 8px 12px !important;
+    box-shadow: none !important;
+    transition: border-color 0.18s ease, background 0.18s ease, box-shadow 0.18s ease;
+}
+
+.modern-page textarea.form-control {
+    height: auto !important;
+    min-height: 80px !important;
+}
+
+.modern-page .moderno_tb:focus,
+.modern-page .form-control:focus,
+.modern-page input.form-control:focus,
+.modern-page select.form-control:focus,
+.modern-page textarea.form-control:focus {
+    background: #fff !important;
+    border-color: var(--dp-primary) !important;
+    box-shadow: 0 0 0 3px rgba(34, 138, 201, 0.18) !important;
+    outline: none !important;
+}
+
+.modern-page .moderno_tb[disabled],
+.modern-page .moderno_tb[readonly],
+.modern-page .form-control[disabled],
+.modern-page .form-control[readonly] {
+    background: #eef2f7 !important;
+    color: var(--dp-text-secondary) !important;
+    cursor: not-allowed;
+}
+
+/* Form rows spacing */
+.modern-page .row {
+    margin-bottom: 4px !important;
+}
+
+/* =========================================================
+   8. DATATABLES (search/pagination/info)
+   ========================================================= */
+
+.modern-page .dataTables_wrapper {
+    font-family: 'Inter', sans-serif !important;
+    color: var(--dp-text-secondary) !important;
+}
+
+.modern-page .dataTables_filter input,
+.modern-page .dataTables_length select {
+    background: #f8fafc !important;
+    border: 1px solid var(--dp-border-strong) !important;
+    border-radius: var(--dp-radius-sm) !important;
+    color: var(--dp-text) !important;
+    padding: 6px 10px !important;
+    margin-left: 6px !important;
+    height: 32px !important;
+    font-size: 13px !important;
+}
+
+.modern-page .dataTables_filter input:focus,
+.modern-page .dataTables_length select:focus {
+    border-color: var(--dp-primary) !important;
+    background: #fff !important;
+    box-shadow: 0 0 0 3px rgba(34, 138, 201, 0.18) !important;
+    outline: none !important;
+}
+
+.modern-page .dataTables_paginate .paginate_button {
+    border-radius: 6px !important;
+    border: 1px solid transparent !important;
+    color: var(--dp-text-secondary) !important;
+    padding: 4px 10px !important;
+    margin: 0 2px !important;
+    background: transparent !important;
+}
+
+.modern-page .dataTables_paginate .paginate_button:hover {
+    background: #f1f5f9 !important;
+    color: var(--dp-primary) !important;
+    border-color: var(--dp-border) !important;
+}
+
+.modern-page .dataTables_paginate .paginate_button.current,
+.modern-page .dataTables_paginate .paginate_button.current:hover {
+    background: var(--dp-primary) !important;
+    color: #fff !important;
+    border-color: var(--dp-primary) !important;
+}
+
+.modern-page .dataTables_info {
+    color: var(--dp-text-muted) !important;
+    font-size: 12.5px !important;
+    padding-top: 12px !important;
+}
+
+/* =========================================================
+   9. PLUGIN MODALS (jquery-confirm, SweetAlert2, alertify)
+   ========================================================= */
+
+/* jquery-confirm */
+.jconfirm .jconfirm-box {
+    border-radius: 14px !important;
+    box-shadow: 0 24px 60px rgba(15, 42, 67, 0.28) !important;
+    font-family: 'Inter', sans-serif !important;
+    overflow: hidden !important;
+}
+
+.jconfirm .jconfirm-box .jconfirm-title {
+    color: var(--dp-text) !important;
+    font-size: 16px !important;
+    font-weight: 700 !important;
+}
+
+.jconfirm .jconfirm-box .jconfirm-content {
+    color: var(--dp-text-secondary) !important;
+    font-size: 13.5px !important;
+}
+
+.jconfirm .jconfirm-box .jconfirm-buttons {
+    padding-top: 12px !important;
+}
+
+.jconfirm .btn,
+.jconfirm .jconfirm-buttons .btn {
+    border-radius: 8px !important;
+    font-weight: 600 !important;
+    padding: 8px 16px !important;
+}
+
+.jconfirm .btn-blue,
+.jconfirm .btn.btn-blue {
+    background: var(--dp-primary) !important;
+    color: #fff !important;
+    border-color: var(--dp-primary) !important;
+}
+
+.jconfirm-bg { background-color: #0b1220 !important; opacity: 0.55 !important; }
+
+/* SweetAlert2 */
+.swal2-popup {
+    border-radius: 14px !important;
+    font-family: 'Inter', sans-serif !important;
+    box-shadow: 0 24px 60px rgba(15, 42, 67, 0.28) !important;
+}
+
+.swal2-title { color: var(--dp-text) !important; font-size: 18px !important; font-weight: 700 !important; }
+.swal2-html-container { color: var(--dp-text-secondary) !important; font-size: 14px !important; }
+
+.swal2-styled.swal2-confirm {
+    background: var(--dp-primary) !important;
+    border-radius: 8px !important;
+    font-weight: 600 !important;
+}
+
+.swal2-styled.swal2-cancel {
+    background: #fff !important;
+    color: var(--dp-text) !important;
+    border: 1px solid var(--dp-border-strong) !important;
+    border-radius: 8px !important;
+    font-weight: 600 !important;
+}
+
+/* Alertify dialogs */
+.alertify .dialog,
+.alertify-log {
+    font-family: 'Inter', sans-serif !important;
+}
+
+.alertify .dialog {
+    border-radius: 14px !important;
+    box-shadow: 0 24px 60px rgba(15, 42, 67, 0.28) !important;
+}
+
+/* =========================================================
+   10. CRUD action buttons toolbar (showCrudButtons header)
+   ========================================================= */
+
+.c-toolbar,
+#cont_botones,
+.crud-toolbar {
+    background: #fff !important;
+    border: 1px solid var(--dp-border) !important;
+    border-radius: var(--dp-radius) !important;
+    padding: 10px 14px !important;
+    margin-bottom: 14px !important;
+    box-shadow: var(--dp-shadow-sm) !important;
+    display: flex !important;
+    flex-wrap: wrap !important;
+    gap: 6px !important;
+    align-items: center !important;
+}
+
+.c-toolbar .btn,
+#cont_botones .btn {
+    margin: 0 !important;
+}
+
+/* =========================================================
+   11. LOGIN PAGE (LogOn.php) — usa estilos propios pero
+   armonizamos con el tema.
+   ========================================================= */
+
+body.login-page,
+html:has(.container-login),
+.container-login {
+    background: linear-gradient(135deg, #0b1220 0%, #111827 45%, #1f2937 100%) !important;
+}
+
+.container-login .wrap-login {
+    border-radius: 18px !important;
+    box-shadow: 0 24px 60px rgba(0, 0, 0, 0.45), 0 4px 14px rgba(0, 0, 0, 0.18) !important;
+}
+
+.container-login .login-btn {
+    background: var(--dp-primary) !important;
+    border-radius: 10px !important;
+}
+
+.container-login .login-btn:hover {
+    background: var(--dp-primary-strong) !important;
+}
+
+/* =========================================================
+   12. UTILIDADES
+   ========================================================= */
+.dp-grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+.dp-grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
+@media (max-width: 768px) {
+    .dp-grid-2, .dp-grid-3 { grid-template-columns: 1fr; }
+}
+
+.dp-flex { display: flex; gap: 8px; align-items: center; }
+.dp-flex-end { display: flex; gap: 8px; align-items: center; justify-content: flex-end; }
+
+/* Hide search arrows visually noisy in number inputs */
+.modern-page input[type="number"]::-webkit-outer-spin-button,
+.modern-page input[type="number"]::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
