@@ -424,8 +424,10 @@ function CargarTabla() {
             {
                 data: 'ctip_articulo',
                 render: function (data, type, row) {
+                    // FIX 73 / BUG 2.8: traducir codigo de tipo a texto.
                     if (data === 'B') return 'Bien';
                     if (data === 'P') return 'Producto';
+                    if (data === 'S') return 'Servicio';
                     return data;
                 }
             },
@@ -463,8 +465,10 @@ function CargarTabla() {
             {
                 data: 'ctip_articulo',
                 render: function (data, type, row) {
+                    // FIX 73 / BUG 2.8: traducir codigo de tipo a texto.
                     if (data === 'B') return 'Bien';
                     if (data === 'P') return 'Producto';
+                    if (data === 'S') return 'Servicio';
                     return data;
                 }
             },

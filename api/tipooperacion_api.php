@@ -18,14 +18,24 @@ switch ($method) {
         $lst = array();
         foreach ($rows as $f) {
             $code = strval($f[2] ?? '');
+            $flag = strval($f[4] ?? '');
             $cs   = strval($f[5] ?? '');
+            // FIX 73 / BUG 2.5: traducir el flag para que la columna
+            // TIPO de la tabla muestre "Salida" / "Ingreso" en vez de
+            // "S" / "I" (codigo crudo de TipoOperacion.ctipo_flag).
+            $flagTxt = $flag;
+            if ($flag === 'S')      $flagTxt = 'Salida';
+            else if ($flag === 'I') $flagTxt = 'Ingreso';
+            else if ($flag === 'T') $flagTxt = 'Transferencia';
             $lst[] = array(
                 'item'        => "<input id='" . $code . "' type='checkbox' class='limpiar_checked' onclick='checked_click(this)'>",
                 'id_ctoper'   => strval($f[0] ?? ''),
                 'ccod_toper'  => $code,
                 'cdsc_toper'  => strval($f[3] ?? ''),
-                'flag'        => strval($f[4] ?? ''),
+                'flag'        => $flagTxt,
+                'ctipo_flag'  => $flag,  // codigo crudo por compatibilidad
                 'estado'      => ($cs === 'A' || $cs === '1') ? 'Activo' : 'Inactivo',
+                'cstatus'     => $cs,
             );
         }
         jsonResponse(array('d' => $lst));

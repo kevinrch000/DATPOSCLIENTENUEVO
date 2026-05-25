@@ -33,10 +33,12 @@ switch ($m) {
     // JS de ConsultaVentas.js envia
     //   { ConsultaArticulo: [ { ccod_articulo, ccod_tienda, ccod_coa,
     //     n_fchDesde, n_fchHasta, cobser_variante } ] }
-    // El SP webDatpos_ConsultasVentaPricipal devuelve 12 columnas en
+    // El SP webDatpos_ConsultasVentaPricipal devuelve 13 columnas en
     // este orden: id_cbfact (oculto), ccod_coa (nombre del cliente),
     // ccod_articulo, cdsc_articulo, ncantidad, nprecio, nimpuesto, nisc,
-    // ndescuento, nimporte_neto, dfch_doc, cobser_variante.
+    // ndescuento, nimporte_neto, dfch_doc, cobser_variante, cdoc_seri.
+    // FIX 73 / BUG 1.2: agregado cdoc_seri (col [12]) para que la
+    // tabla "Ventas por Articulo" del Home muestre DOC. REF.
     case 'ConsultasVentaPricipal':
         $input = getJsonInput();
         $data = $input['ConsultaArticulo'][0]
@@ -65,6 +67,8 @@ switch ($m) {
                 'nimporte_neto'   => strval($f[9] ?? ''),
                 'dfch_doc'        => strval($f[10] ?? ''),
                 'cobser_variante' => strval($f[11] ?? ''),
+                // FIX 73 / BUG 1.2: DOC. REF para la tabla del Home.
+                'cdoc_seri'       => strval($f[12] ?? ''),
                 'cstatus'         => '',
             );
         }

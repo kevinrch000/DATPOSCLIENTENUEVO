@@ -98,7 +98,19 @@ switch ($m) {
                 'cdoc_nro'           => strval($f[4] ?? ''),
                 'ntotal'             => strval($f[5] ?? ''),
                 'dfch_doc'           => strval($f[6] ?? ''),
-                'cstatus_tributario' => strval($f[7] ?? ''),
+                // FIX 73 / BUG 3.23: traducir codigos SUNAT a texto.
+                // 1=Pendiente, 4=Aceptado, 5=Aceptado c/observaciones,
+                // 6=Error, 8=Anulado. Cualquier otro: se devuelve crudo.
+                'cstatus_tributario' => (function($cs){
+                    switch ($cs) {
+                        case '1': return 'Pendiente de envio';
+                        case '4': return 'Aceptado';
+                        case '5': return 'Aceptado con observaciones';
+                        case '6': return 'Error';
+                        case '8': return 'Anulado';
+                        default:  return $cs;
+                    }
+                })(strval($f[7] ?? '')),
                 'pdf' => $pdf,
                 'xml' => $xml,
                 'zip' => $zip,
@@ -176,7 +188,15 @@ switch ($m) {
                 'cdsc_tienda'     => strval($f[7] ?? ''),
                 'ntotal'          => strval($f[8] ?? ''),
                 'dfch_doc'        => strval($f[9] ?? ''),
-                'cstatus'         => strval($f[10] ?? ''),
+                // FIX 73 / BUG 3.19: traducir codigo de estado a texto.
+                // 'P' = Pendiente, 'A' = Anulado. Mantenemos los codigos
+                // crudos en 'nestado' por compatibilidad con flujos
+                // legacy que comparan contra 'P'/'A'.
+                'cstatus'         => (function($cs){
+                    if ($cs === 'P') return 'Pendiente';
+                    if ($cs === 'A') return 'Anulado';
+                    return $cs;
+                })(strval($f[10] ?? '')),
                 'nestado'         => strval($f[10] ?? ''),
                 'cobs'            => strval($f[11] ?? ''),
                 'ccod_articulo'   => strval($f[12] ?? ''),
@@ -292,15 +312,23 @@ switch ($m) {
         } jsonResponse(array('d' => $lst)); break;
 
     case 'CargarClienteFacturar':
+        // FIX 73 / BUG 3.6: 'tableVisibleConsulClientes' DataTable
+        // declara la columna { data: 'item' } y espera un radio cuyo
+        // input[name=radiob] tenga como id el codigo del cliente
+        // (Facturacion6.js -> PasaDatosCodCliente lee cells[0].lastChild.id).
         $rows = Database::selectStoredTenant('sp_cargarclientefacturar', array('@ccod_cia' => $o->ccod_empresa), $o);
         $lst = array(); foreach ($rows as $f) {
             $codCoa = strval($f[0] ?? '');
+            $radio  = "<input type='radio' name='radiob' id='" . $codCoa . "'>";
             $lst[] = array(
-                'cbx'       => '',
+                'item'      => $radio,
+                'cbx'       => $radio, // alias legacy por compatibilidad
                 'id_coa'    => $codCoa,
                 'ccod_coa'  => $codCoa,
                 'cdsc_coa'  => strval($f[1] ?? ''),
                 'cdoc_coa'  => strval($f[2] ?? ''),
+                'cdirc_coa' => '',
+                'ctip_doc'  => '',
             );
         } jsonResponse(array('d' => $lst)); break;
 
@@ -789,17 +817,38 @@ switch ($m) {
         $lst = array(); foreach ($rows as $f) { $lst[] = array('cbx' => '', 'id_articulo' => strval($f[0] ?? ''), 'ccod_articulo' => strval($f[0] ?? ''), 'cdsc_articulo' => strval($f[1] ?? '')); }
         jsonResponse(array('d' => $lst)); break;
 
-    // === Kardex ===
+    // === Kardex (Kardex.php) ===
+    // FIX 73 / BUG 2.20: el JS de Kardex.js llama
+    // Kardex.aspx/ConsultaKardexPricipal (typo legacy) y espera
+    // columnas ccod_tienda, ccod_alm, ccod_articulo, cdsc_articulo,
+    // n_anio, n_mes, n_cantInicial, n_cantIngreso, n_cantSalisa, n_saldo.
+    // Antes el SP sp_kardexprincipal no existia ("no funciona, no
+    // muestra error visible"). Ahora se crea en MODIFY_924 y se
+    // soportan ambos nombres de metodo (con y sin typo).
     case 'KardexPrincipal':
+    case 'ConsultaKardexPricipal':
+    case 'ConsultaKardexPrincipal':
         $input = getJsonInput(); $data = $input['Kardex'][0] ?? array();
         $rows = Database::selectStoredTenant('sp_kardexprincipal', array(
-            '@ccod_cia' => $o->ccod_empresa, '@fchDesde' => $data['fchDesde'] ?? '',
-            '@fchHasta' => $data['fchHasta'] ?? '', '@id_articulo' => $data['id_articulo'] ?? '',
-            '@ccod_alm' => $data['ccod_alm'] ?? ''), $o);
+            '@ccod_cia' => $o->ccod_empresa,
+            '@fchDesde' => $data['n_fchDesde'] ?? ($data['fchDesde'] ?? ''),
+            '@fchHasta' => $data['n_fchHasta'] ?? ($data['fchHasta'] ?? ''),
+            '@id_articulo' => $data['ccod_articulo'] ?? ($data['id_articulo'] ?? ''),
+            '@ccod_alm' => $data['ccod_alm'] ?? ''
+        ), $o);
         $lst = array(); foreach ($rows as $f) {
-            $lst[] = array('cdsc_articulo' => strval($f[0] ?? ''), 'DocRef' => strval($f[1] ?? ''),
-                'EntradaCantidad' => strval($f[2] ?? ''), 'SalidaCantidad' => strval($f[3] ?? ''),
-                'SaldoCantidad' => strval($f[4] ?? ''), 'FchDoc' => strval($f[5] ?? ''));
+            $lst[] = array(
+                'ccod_tienda'   => strval($f[0] ?? ''),
+                'ccod_alm'      => strval($f[1] ?? ''),
+                'ccod_articulo' => strval($f[2] ?? ''),
+                'cdsc_articulo' => strval($f[3] ?? ''),
+                'n_anio'        => strval($f[4] ?? ''),
+                'n_mes'         => strval($f[5] ?? ''),
+                'n_cantInicial' => strval($f[6] ?? ''),
+                'n_cantIngreso' => strval($f[7] ?? ''),
+                'n_cantSalisa'  => strval($f[8] ?? ''),
+                'n_saldo'       => strval($f[9] ?? ''),
+            );
         } jsonResponse(array('d' => $lst)); break;
 
     // === MargenUtilidad por documento ===
