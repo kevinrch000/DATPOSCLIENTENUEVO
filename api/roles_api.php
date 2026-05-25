@@ -192,10 +192,15 @@ switch ($method) {
                 if ($stmtDel) sqlsrv_free_stmt($stmtDel);
             }
 
-            // Insertar accesos si el id_rol se obtuvo correctamente
+            // Insertar accesos si el id_rol se obtuvo correctamente.
+            // El JS envia cstatus como boolean JSON (true/false), no como string 'True'.
+            // Toleramos boolean / 'true' / 'True' / '1' / 1.
             if ($id_rol !== '') {
                 foreach ($menu as $m) {
-                    if (($m['cstatus'] ?? '') === 'True' && ($m['nivel'] ?? '') === 'Si') {
+                    $st = $m['cstatus'] ?? false;
+                    $isChecked = ($st === true || $st === 1 || $st === '1'
+                        || (is_string($st) && strtolower($st) === 'true'));
+                    if ($isChecked && ($m['nivel'] ?? '') === 'Si') {
                         $sqlAcc  = "EXEC webDatpos_insertarAcceso @ccod_cia=?, @id_rol=?, @cstatus='1', @corden=?, @ccod_usuario=?";
                         $stmtAcc = sqlsrv_query($conn, $sqlAcc, array(
                             $objUsuario->ccod_empresa,
@@ -207,7 +212,10 @@ switch ($method) {
                     }
                 }
                 foreach ($modulo as $mod) {
-                    if (($mod['cstatus'] ?? '') === 'True') {
+                    $st = $mod['cstatus'] ?? false;
+                    $isChecked = ($st === true || $st === 1 || $st === '1'
+                        || (is_string($st) && strtolower($st) === 'true'));
+                    if ($isChecked) {
                         $sqlAcc2  = "EXEC webDatpos_insertarAcceso @ccod_cia=?, @id_rol=?, @cstatus='1', @corden=?, @ccod_usuario=?";
                         $stmtAcc2 = sqlsrv_query($conn, $sqlAcc2, array(
                             $objUsuario->ccod_empresa,

@@ -16,9 +16,13 @@ switch ($method) {
         $rows = Database::selectStoredTenant('sp_consultarcajas', array('@ccod_empresa' => $objUsuario->ccod_empresa), $objUsuario);
         $lst = array();
         foreach ($rows as $f) {
+            $cs = strval($f[3] ?? '');
             $lst[] = array(
-                'item' => "<input id='" . strval($f[1] ?? '') . "' type='checkbox' class='limpiar_checked' onclick='checked_click(this)'>",
-                'ccod_caja' => strval($f[1] ?? ''), 'cdsc_caja' => strval($f[2] ?? ''), 'estado' => strval($f[3] ?? '')
+                'item'      => "<input id='" . strval($f[1] ?? '') . "' type='checkbox' class='limpiar_checked' onclick='checked_click(this)'>",
+                'ccod_caja' => strval($f[1] ?? ''),
+                'cdsc_caja' => strval($f[2] ?? ''),
+                // Estado: la tabla guarda 'A'/'I'. Para la grilla mostramos texto legible (BUG 4.3 / Prioridad 4).
+                'estado'    => ($cs === 'A') ? 'Activo' : (($cs === 'I') ? 'Inactivo' : $cs),
             );
         }
         jsonResponse(array('d' => $lst));
@@ -52,10 +56,16 @@ switch ($method) {
         $data = $input['caja'][0] ?? array();
         $op   = $input['operacion'] ?? '';
         $sp   = ($op === 'nuevo') ? 'webDatpos_insertarcaja' : 'sp_editarcaja';
+        // Normalizar cstatus: la BD almacena 'A'/'I'; tolerar 1/0 por compatibilidad legacy.
+        $rawSt = strtoupper(trim(strval($data['cstatus'] ?? '')));
+        if ($rawSt === '' || $rawSt === '1' || $rawSt === 'A') $cstatus = 'A';
+        else if ($rawSt === '0' || $rawSt === 'I')             $cstatus = 'I';
+        else                                                    $cstatus = 'A';
         Database::executeStoredTenant($sp, array(
             '@ccod_empresa' => $objUsuario->ccod_empresa,
             '@ccod_caja'    => $data['ccod_caja'] ?? '',
             '@cdsc_caja'    => $data['cdsc_caja'] ?? '',
+            '@cstatus'      => $cstatus,
             '@ccod_usuario' => $objUsuario->ccod_usuario,
         ), $objUsuario);
         // Numeradores: si vienen, se podrían guardar via sp_insertarnumerador (pendiente)
