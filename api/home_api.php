@@ -319,21 +319,39 @@ switch ($method) {
         } jsonResponse(array('d' => $lst)); break;
 
     case 'ReporteKardexPrincipal':
+        // FIX 73 / BUG 1.3: tableKardex del Home declara 12 columnas:
+        // DocRef, FchDoc, cdsc_articulo, Entrada{Cantidad,Costo,Total},
+        // Salida{Cantidad,Costo,Total}, Saldo{Cantidad,Costo,Total}.
+        // Antes solo se mapeaban 6, asi que la mayoria salia vacia.
+        // El SP webDatpos_ConsultaKardex se reescribio en MODIFY_924
+        // para devolverlas en este mismo orden con saldo acumulado.
         $input = getJsonInput();
-        $fchDesde = normalizarFechaSQL($input['fchDesde'] ?? '');
-        $fchHasta = normalizarFechaSQL($input['fchHasta'] ?? '');
-        
+        $data = $input['ReporteKardex'][0] ?? $input;
+        $fchDesde = normalizarFechaSQL($data['fchDesde'] ?? ($data['n_fchDesde'] ?? ''));
+        $fchHasta = normalizarFechaSQL($data['fchHasta'] ?? ($data['n_fchHasta'] ?? ''));
+
         $rows = Database::selectStoredTenant('webDatpos_ConsultaKardex', array(
             '@ccod_cia' => $objUsuario->ccod_empresa,
-            '@ccod_articulo' => $input['ccod_articulo'] ?? '',
-            '@ccod_alm' => $input['ccod_alm'] ?? '',
+            '@ccod_articulo' => $data['ccod_articulo'] ?? '',
+            '@ccod_alm' => $data['ccod_alm'] ?? '',
             '@fchDesde' => $fchDesde,
             '@fchHasta' => $fchHasta
         ), $objUsuario);
         $lst = array(); foreach ($rows as $f) {
-            $lst[] = array('cdsc_articulo' => strval($f[0] ?? ''), 'DocRef' => strval($f[1] ?? ''),
-                'EntradaCantidad' => strval($f[2] ?? ''), 'SalidaCantidad' => strval($f[3] ?? ''),
-                'SaldoCantidad' => strval($f[4] ?? ''), 'FchDoc' => strval($f[5] ?? ''));
+            $lst[] = array(
+                'DocRef'          => strval($f[0] ?? ''),
+                'FchDoc'          => strval($f[1] ?? ''),
+                'cdsc_articulo'   => strval($f[2] ?? ''),
+                'EntradaCantidad' => strval($f[3] ?? ''),
+                'EntradaCosto'    => strval($f[4] ?? ''),
+                'EntradaTotal'    => strval($f[5] ?? ''),
+                'SalidaCantidad'  => strval($f[6] ?? ''),
+                'SalidaCosto'     => strval($f[7] ?? ''),
+                'SalidaTotal'     => strval($f[8] ?? ''),
+                'SaldoCantidad'   => strval($f[9] ?? ''),
+                'SaldoCosto'      => strval($f[10] ?? ''),
+                'SaldoTotal'      => strval($f[11] ?? ''),
+            );
         }
         jsonResponse(array('d' => $lst)); break;
 

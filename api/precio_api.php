@@ -30,14 +30,21 @@ function _precioConvertDate($dateStr) {
 
 switch ($method) {
     case 'ConsultarListaPrecios':
+        // FIX 73 / BUG 3.1: traducir cstatus a texto para la columna
+        // Estado de tableOperAlmacen / table_id (Precios.js).
+        // El SP devuelve 'A'/'I' crudo en col [6].
         $rows = Database::selectStoredTenant('sp_consultarlistasprecios', array('@ccod_cia' => $objUsuario->ccod_empresa), $objUsuario);
         $lst = array();
         foreach ($rows as $f) {
+            $cs = strval($f[6] ?? '');
+            $est = ($cs === 'A' || $cs === '1') ? 'Activo'
+                 : (($cs === 'I' || $cs === '0') ? 'Inactivo' : $cs);
             $lst[] = array(
                 'item' => "<input id='" . strval($f[2]) . "' type='checkbox' class='limpiar_checked' onclick='checked_click(this)'>",
                 'id_cblistpre' => strval($f[0] ?? ''), 'ccod_cia' => strval($f[1] ?? ''), 'ccod_cblistpre' => strval($f[2] ?? ''),
                 'cdsc_cblistpre' => strval($f[3] ?? ''), 'dfch_ini' => strval($f[4] ?? ''), 'dfch_fin' => strval($f[5] ?? ''),
-                'estado' => strval($f[6] ?? '')
+                'estado' => $est,
+                'cstatus' => $cs, // codigo crudo por compatibilidad
             );
         }
         jsonResponse(array('d' => $lst));
@@ -81,21 +88,29 @@ switch ($method) {
         break;
 
     case 'ConsultarArticulos':
+        // FIX 73 / BUG 3.1: traducir estado a texto.
         $rows = Database::selectStoredTenant('sp_consultararticulos', array('@ccod_cia' => $objUsuario->ccod_empresa), $objUsuario);
         $lst = array();
         foreach ($rows as $f) {
+            $cs  = strval($f[4] ?? '');
+            $est = ($cs === 'A' || $cs === '1') ? 'Activo'
+                 : (($cs === 'I' || $cs === '0') ? 'Inactivo' : $cs);
             $lst[] = array('ccod_articulo' => strval($f[0] ?? ''), 'cdsc_articulo' => strval($f[1] ?? ''),
-                'linea' => strval($f[2] ?? ''), 'uni_medi' => strval($f[3] ?? ''), 'estado' => strval($f[4] ?? ''));
+                'linea' => strval($f[2] ?? ''), 'uni_medi' => strval($f[3] ?? ''), 'estado' => $est);
         }
         jsonResponse(array('d' => $lst));
         break;
 
     case 'ConsultarCostosArticulos':
+        // FIX 73 / BUG 3.1: traducir estado a texto.
         $rows = Database::selectStoredTenant('webDatpos_consultarCostosArticulos', array('@ccod_cia' => $objUsuario->ccod_empresa), $objUsuario);
         $lst = array();
         foreach ($rows as $f) {
+            $cs  = strval($f[4] ?? '');
+            $est = ($cs === 'A' || $cs === '1') ? 'Activo'
+                 : (($cs === 'I' || $cs === '0') ? 'Inactivo' : $cs);
             $lst[] = array('ccod_articulo' => strval($f[0] ?? ''), 'cdsc_articulo' => strval($f[1] ?? ''),
-                'linea' => strval($f[2] ?? ''), 'uni_medi' => strval($f[3] ?? ''), 'estado' => strval($f[4] ?? ''));
+                'linea' => strval($f[2] ?? ''), 'uni_medi' => strval($f[3] ?? ''), 'estado' => $est);
         }
         jsonResponse(array('d' => $lst));
         break;

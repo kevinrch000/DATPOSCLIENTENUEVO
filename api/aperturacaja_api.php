@@ -38,6 +38,13 @@ switch ($method) {
         $rows = $objBL->ConsultarCierreCaja($objUsuario);
         $lst = array();
         foreach ($rows as $f) {
+            // FIX 73 / BUG 3.3: traducir codigo de Turno.cstatus a
+            // texto. 'A' = Abierto, 'C' = Cerrado. Antes la columna
+            // Estado mostraba la letra cruda.
+            $csRaw = strval(S($f[8]));
+            $cstxt = $csRaw;
+            if ($csRaw === 'A')       $cstxt = 'Abierto';
+            else if ($csRaw === 'C')  $cstxt = 'Cerrado';
             $lst[] = array(
                 'item' => "<input id='" . S($f[0]) . "' type='checkbox' class='limpiar_checked' onclick='checked_click(this)'>",
                 'id_turno' => S($f[0]),
@@ -48,7 +55,8 @@ switch ($method) {
                 'nmonto_fin' => S($f[5]),
                 'dfecha_ini' => S($f[6]),
                 'dfecha_fin' => S($f[7]),
-                'cstatus' => S($f[8])
+                'cstatus' => $cstxt,
+                'cstatus_raw' => $csRaw // codigo crudo por compatibilidad
             );
         }
         jsonResponse(array('d' => $lst));
