@@ -225,6 +225,7 @@ ob_start();
                         <div class="col-sm-10">
                             <select class="disabled limpiar form-control moderno_tb" id="ddl_tipArticulo" disabled onclick="ObtenerNombreColumna(this)" >
                             <option value ="B">Bien</option>
+                            <option value ="P">Producto</option>
                             <option value ="S">Servicio</option>
                             </select>
                         </div>

@@ -2118,11 +2118,25 @@ var objLogo = llenarobjeto('../Interfaces/Home.aspx/CargarFotoUsuario');
     $("#modalConsultarClientes").draggable();
     $("#modalNCNuevo").draggable();
      
+    // FIX 74 / BUG 3.4: el input #tb_anadir esta dentro de un <form> (o
+    // bootstrap form-group); al presionar Enter el browser disparaba el
+    // submit por defecto y la pagina recargaba/se cerraba inesperadamente.
+    // Capturamos en keydown (antes del submit) y bloqueamos el evento para
+    // todas las teclas Enter; el handler de keyup ejecuta el agregado.
+    $("#tb_anadir").on('keydown keypress', function (e) {
+        if (e.key === 'Enter' || e.keyCode === 13) {
+            e.preventDefault();
+            e.stopPropagation();
+            return false;
+        }
+    });
     $("#tb_anadir").on('keyup', function (e) {
         if (e.key === 'Enter' || e.keyCode === 13) {
-
+            e.preventDefault();
+            e.stopPropagation();
             PasarArticuloCodigo($('#tb_anadir').val());
             $('#tb_anadir').val("");
+            return false;
         }
     });
 

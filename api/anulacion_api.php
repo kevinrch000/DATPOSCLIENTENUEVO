@@ -19,26 +19,34 @@ switch ($m) {
             '@correlativo' => $data['cdoc_nro'] ?? '', '@ccod_tienda' => $data['ccod_tienda'] ?? '',
             '@ccod_coa' => $data['ccod_coa'] ?? '', '@fchDesde' => $data['n_fchDesde'] ?? '',
             '@fchHasta' => $data['n_fchHasta'] ?? '', '@CodCia' => $o->ccod_empresa), $o);
+        // FIX 74 / BUG 3.13: MODIFY_930 amplio webDatpos_anulacionPricipal
+        // de 8 a 15 cols (orden estable: id_cbfact, cdoc, cserie, nnumero,
+        // dfch_doc, cdsc_coa, ntotal, ccod_coa, ccod_tienda, cdsc_tienda,
+        // ccod_caja, cdsc_caja, cusu_crea, cdsc_usuario, cstatus_doc).
+        // Mantenemos compatibilidad con la version vieja (<=8 cols) sin
+        // perder los nuevos campos: si la columna no existe se mapea ''.
         $lst = array(); foreach ($rows as $f) {
-            if (count($f) <= 8) {
-                $id = S($f[0] ?? '');
-                $lst[] = array('cdoc' => S($f[1] ?? ''), 'cdoc_serie' => S($f[2] ?? ''), 'cdoc_nro' => S($f[3] ?? ''),
-                    'cdoc_coa' => '', 'cdsc_coa' => S($f[5] ?? ''), 'ntotal' => S($f[6] ?? ''),
-                    'dfch_doc' => S($f[4] ?? ''),
-                    'DocFact' => "<td class='text-center'><i title='Documento Ref.' id='".$id."' onclick='ModalBuscarDoc(this);' data-toggle='modal' data-target='#modalBuscarDoc' class='fa fa-arrow-right color-popup-verde' aria-hidden='true'></i></td>",
-                    'Anulacion' => "<td class='text-center'><i title='Anulación' id='".$id."' onclick='ModalAnularDoc(this);' data-toggle='modal' data-target='#modalDarDeBaja' class='fa fa-file-excel-o color-popup' aria-hidden='true'></i></td>",
-                    'id_cbfact' => $id);
-            } else {
-                $lst[] = array('cdoc' => S($f[0]), 'cdoc_serie' => S($f[1]), 'cdoc_nro' => S($f[2]),
-                    'cdoc_coa' => S($f[3]), 'cdsc_coa' => S($f[4]), 'ntotal' => S($f[5]),
-                    'dfch_doc' => S($f[6]),
-                    'DocFact' => "<td class='text-center'><i title='Documento Ref.' id='".S($f[7])."' onclick='ModalBuscarDoc(this);' data-toggle='modal' data-target='#modalBuscarDoc' class='fa fa-arrow-right color-popup-verde' aria-hidden='true'></i></td>",
-                    'Anulacion' => "<td class='text-center'><i title='Anulación' id='".S($f[7])."' onclick='ModalAnularDoc(this);' data-toggle='modal' data-target='#modalDarDeBaja' class='fa fa-file-excel-o color-popup' aria-hidden='true'></i></td>",
-                    'id_cbfact' => S($f[7]), 'ccod_coa' => S($f[8]),
-                    'ccod_tienda' => S($f[9]), 'cdsc_tienda' => S($f[10]),
-                    'ccod_caja' => S($f[11]), 'cdsc_caja' => S($f[12]),
-                    'cusu_crea' => S($f[13]), 'cdsc_usuario' => S($f[14]));
-            }
+            $id = S($f[0] ?? '');
+            $lst[] = array(
+                'cdoc'         => S($f[1] ?? ''),
+                'cdoc_serie'   => S($f[2] ?? ''),
+                'cdoc_nro'     => S($f[3] ?? ''),
+                'cdoc_coa'     => S($f[7] ?? ''),  // RUC del cliente
+                'cdsc_coa'     => S($f[5] ?? ''),  // Nombre del cliente
+                'ntotal'       => S($f[6] ?? ''),
+                'dfch_doc'     => S($f[4] ?? ''),
+                'ccod_tienda'  => S($f[8] ?? ''),
+                'cdsc_tienda'  => S($f[9] ?? ''),
+                'ccod_caja'    => S($f[10] ?? ''),
+                'cdsc_caja'    => S($f[11] ?? ''),
+                'cusu_crea'    => S($f[12] ?? ''),
+                'cdsc_usuario' => S($f[13] ?? ''),
+                'cstatus_doc'  => S($f[14] ?? ''),
+                'DocFact'      => "<td class='text-center'><i title='Documento Ref.' id='".$id."' onclick='ModalBuscarDoc(this);' data-toggle='modal' data-target='#modalBuscarDoc' class='fa fa-arrow-right color-popup-verde' aria-hidden='true'></i></td>",
+                'Anulacion'    => "<td class='text-center'><i title='Anulación' id='".$id."' onclick='ModalAnularDoc(this);' data-toggle='modal' data-target='#modalDarDeBaja' class='fa fa-file-excel-o color-popup' aria-hidden='true'></i></td>",
+                'id_cbfact'    => $id,
+                // Alias para JS que use ccod_coa (legacy)
+                'ccod_coa'     => S($f[7] ?? ''));
         } jsonResponse(array('d' => $lst)); break;
 
     case 'AnulacionDoc':

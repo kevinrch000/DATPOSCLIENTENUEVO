@@ -451,6 +451,13 @@ function CompletarCampos(obj){
 
    $("#txtnom_rzn_soc_dest").val(obj[0].cnom_rzn_soc_dest);
    $("#txtnom_rzn_soc_prov").val(obj[0].cdsc_coa);
+   // FIX 74 / BUG 2.15: el API ya devuelve los RUC pero CompletarCampos no
+   // los asignaba al formulario, por lo que el usuario veia los campos
+   // RUC vacios al pasar de Lista -> Datos.
+   // IdRemitente es <span> (RUC de la empresa, viene de la sesion); no se
+   // sobreescribe. IdDestino e IdProveedor son <input>.
+   if (obj[0].cnum_ruc_dest) $("#IdDestino").val(obj[0].cnum_ruc_dest);
+   if (obj[0].cnum_ruc_proy) $("#IdProveedor").val(obj[0].cnum_ruc_proy);
    // #txtdfecha es <input type="date"> y solo acepta YYYY-MM-DD. La API
    // devuelve DD/MM/YYYY -> antes la asignacion silenciosamente fallaba y
    // el campo se mostraba vacio ("la fecha se resetea").

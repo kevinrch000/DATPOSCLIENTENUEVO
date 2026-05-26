@@ -591,3 +591,37 @@ span.c-menu-toggle {
         right: 8px !important;
     }
 }
+
+/* =========================================================
+ * 16. FIX z-index SweetAlert / advertencias sobre modales (BUG 2.1, 2.14)
+ *
+ * Las advertencias se mostraban por DEBAJO de los modales de Bootstrap
+ * (el modal usa z-index 1050; el backdrop 1040). SweetAlert y los
+ * popovers de validación tenían valores menores, por lo que la
+ * advertencia quedaba oculta detrás del modal y el usuario no veia
+ * el motivo del rechazo (ej. numerador con caracteres incorrectos).
+ * Forzamos cualquier overlay de alerta/aviso a quedar siempre por
+ * encima del backdrop y del modal.
+ * ========================================================= */
+.swal-overlay,
+.swal2-container,
+.sweet-overlay,
+.sweet-alert {
+    z-index: 20000 !important;
+}
+
+.popover.fade.bottom.in,
+.tooltip.in,
+.alert.alert-warning,
+.alert.alert-danger,
+.alert.alert-info {
+    z-index: 19000 !important;
+}
+
+/* Advertencias del editor in-place de DataTables (BUG 2.1) */
+div.DTE_Inline,
+div.DTE_Inline_Buttons,
+div.DTE_Field_Error {
+    z-index: 19500 !important;
+    position: relative !important;
+}

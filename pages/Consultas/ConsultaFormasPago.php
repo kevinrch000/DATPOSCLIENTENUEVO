@@ -123,8 +123,10 @@ ob_start(); ?>
         <ul class="nav nav-tabs"   class="active">
             <li onclick="">
             <a data-toggle="tab" id="TLista" href="#Lista" onclick="Opcion()" class="tabcito">Lista</a></li>
-            <li onclick="">
-            <a data-toggle="tab" id="TDetallado" href="#Detallado" onclick="Opcion2()" class="tabcito">Detallado</a></li>
+            <?php /* FIX 74 / BUG 3.20: tab "Detallado" removido por
+                    duplicacion con "Ver detalle" (modal). El bloque
+                    #Detallado se conserva mas abajo como #Div_DetalladoExpor
+                    para mantener el codigo de impresion/exportacion intacto. */ ?>
          </ul>
            <div class="tab-content" style="padding-bottom:30px;">
          <!-- LISTADO -->

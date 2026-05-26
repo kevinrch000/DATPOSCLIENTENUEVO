@@ -15,6 +15,9 @@ $DA = new DAIngreso();
 switch ($m) {
 
 case 'ConsultarIngresos':
+    // FIX 74 / BUG 2.9: webDatpos_consultarIngresos amplio a 10 cols
+    // para devolver cdsc_tipoper (descripcion) en lugar del codigo,
+    // mas ntotal y ctipo_raw como alias.
     $rows = $DA->ConsultarIngresos($o->ccod_empresa, $o);
     $lst = array();
     foreach ($rows as $f) {
@@ -27,7 +30,9 @@ case 'ConsultarIngresos':
             'dfecha'      => strval($f[3] ?? ''),
             'vserie'      => strval($f[4] ?? ''),
             'nnumero'     => strval($f[5] ?? ''),
-            'ctipo'       => strval($f[6] ?? ''),
+            'ctipo'       => strval($f[6] ?? ''),        // descripcion
+            'ctipo_raw'   => strval($f[9] ?? ($f[6] ?? '')), // codigo
+            'ntotal'      => strval($f[8] ?? ''),
             'vobservacion'=> strval($f[7] ?? ''),
         );
     }

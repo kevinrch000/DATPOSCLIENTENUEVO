@@ -368,6 +368,38 @@ function Limpiar(){
 }
 
 
+// FIX 74 / BUG 3.27: la funcion CargarListPrecio no estaba definida en
+// ningun archivo cargado por la pagina (Filtros.js solo expone
+// CargarFamilia/CargarUnidadMedida), por lo que el dropdown "Lista de
+// precios*" quedaba vacio. La definimos aqui hitting el endpoint
+// existente ConsultarListaPrecios (precio_api.php) que ya devuelve
+// id_cblistpre + ccod_cblistpre + cdsc_cblistpre.
+function CargarListPrecio() {
+    var listBox = document.getElementById("slListPrec");
+    if (!listBox) return;
+    listBox.options.length = 0;
+    $.ajax({
+        type: "POST",
+        url: '../Ventas/Precios.aspx/ConsultarListaPrecios',
+        data: '{codigo: ""}',
+        contentType: "application/json; charset=utf-8",
+        dataType: "json",
+        async: false,
+        success: function (response) {
+            if (response.d) {
+                var $dd = $("#slListPrec");
+                $dd.append($("<option />").val("").text(""));
+                $.each(response.d, function () {
+                    $dd.append($("<option />")
+                        .val(this.ccod_cblistpre)
+                        .text(this.cdsc_cblistpre + " (" + this.ccod_cblistpre + ")"));
+                });
+            }
+        },
+        error: function (xhr, status, error) { console.error(error); }
+    });
+}
+
 $(document).ready(function () {
      CargarMenu();
 

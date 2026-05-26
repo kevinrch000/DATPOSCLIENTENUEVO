@@ -120,7 +120,11 @@ $(document).ready(function () {
     ConsultaColumnas();
 
     CargarMesActual();
-    CargarTienda();
+    // FIX 74 / BUG 3.28: si el usuario navego via SPA desde Home, la
+    // funcion CargarTienda() global puede haber sido sobreescrita por
+    // Bashboard.js (que llena #txtTiendaPorProducto, no #txtTienda).
+    // Llamamos a una version local que SIEMPRE poblar #txtTienda.
+    CargarTiendaReporteVenta();
 //    CargarNumeradorFactura();
 
     $("#ModalDatosPersonales").draggable();
@@ -140,6 +144,43 @@ $(document).ready(function () {
 
 
 });
+
+// FIX 74 / BUG 3.28: version local de CargarTienda independiente del
+// overriding global (Bashboard.js / AperturaCaja.js / CierreCaja.js).
+function CargarTiendaReporteVenta() {
+    var listBox = document.getElementById("txtTienda");
+    if (!listBox) return;
+    listBox.options.length = 0;
+    $.ajax({
+        type: "POST",
+        url: '../Consultas/ConfigGeneral.aspx/CargarTienda',
+        data: '{codigo: "' + "cod" + '" }',
+        contentType: "application/json; charset=utf-8",
+        dataType: "json",
+        async: false,
+        success: function (response) {
+            if (response.d) {
+                var $dropdown = $("#txtTienda");
+                $dropdown.append($("<option />").val("").text(""));
+                $.each(response.d, function (item) {
+                    $dropdown.append($("<option />")
+                        .val(this.ccod_tiend)
+                        .text(this.cnombr + " (" + this.ccod_tiend + ")"));
+                });
+            }
+        },
+        error: function (xhr, status, error) { console.error(error); }
+    });
+    var obj = (typeof llenarobjeto === 'function')
+        ? llenarobjeto('../Consultas/ConfigGeneral.aspx/TiendaAsignada')
+        : '';
+    if (obj && obj.trim && obj.trim() !== "") {
+        document.getElementById("txtTienda").setAttribute("value", "Tienda*");
+        (document.getElementById("txtTienda")).selectedIndex =
+            [...(document.getElementById("txtTienda")).options]
+                .findIndex(option => option.value === (obj).toString());
+    }
+}
 
 $.datepicker.regional['es'] = {
     closeText: 'Cerrar',

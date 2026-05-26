@@ -30,18 +30,21 @@ switch ($method) {
         );
         $lst = array();
         foreach ($rows as $f) {
-            if (count($f) <= 8) {
+            if (count($f) <= 10) {
                 $id = S($f[0] ?? '');
-                // FIX 59: DataTable de NotaCredito.php declara las columnas
-                // cdoc, cdoc_serie, cdoc_nro, cdoc_coa, ccoa_dsc, ntotal,
-                // dfch_doc, cdsc_usuario, impresion; faltaba cdsc_usuario.
+                // FIX 74 / BUG 3.11: MODIFY_930 amplio el SP de 8 a 10 cols
+                // para incluir ccod_coa (RUC del cliente) y cdsc_usuario
+                // (vendedor). Mantenemos compatibilidad con la version vieja
+                // de 8 cols haciendo $f[8] / $f[9] opcionales.
                 $lst[] = array('DocFact' => "<input id='" . $id . "'  type='checkbox'  class='limpiar_checked'  onclick='checked_click(this)'>",
                     'cdoc' => S($f[1] ?? ''), 'cdoc_serie' => S($f[2] ?? ''),
                     'cdoc_nro' => S($f[3] ?? ''), 'ccoa_dsc' => S($f[7] ?? ''),
                     'cdsc_tienda' => '', 'ntotal' => S($f[5] ?? ''), 'dfch_doc' => S($f[4] ?? ''),
-                    'ccod_alm' => '', 'cdsc_usuario' => 'ADMIN',
+                    'ccod_alm' => '',
+                    'cdsc_usuario' => S($f[9] ?? 'ADMIN'),
                     'impresion' => "<td class='text-center'><i title='Impresión' id='" . $id . "' onclick='ImprimirPDF(this);' class='fa fa-print' aria-hidden='true'></i></td>",
-                    'id_cbfact' => $id, 'cdoc_coa' => '');
+                    'id_cbfact' => $id,
+                    'cdoc_coa' => S($f[8] ?? ''));
             } else {
                 $id = S($f[8] ?? '');
                 $lst[] = array('DocFact' => "<input id='" . $id . "'  type='checkbox'  class='limpiar_checked'  onclick='checked_click(this)'>",

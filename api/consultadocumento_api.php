@@ -528,14 +528,41 @@ switch ($m) {
         break;
 
     // === ConsultaArticulos ===
+    // FIX 74 / BUG 2.17: el SP sp_consultararticulospricipal antes
+    // devolvia 4 cols (resumen de ventas) pero ConsultaArticulos.js
+    // espera el catalogo de articulos (7 cols). MODIFY_930 recrea el SP
+    // como SELECT sobre Articulos+Familias+UnidadMedida con los filtros
+    // CodArticulo/NomAticulo/TipArticulo/Tributos/Familia/UniMedida/Estado.
     case 'ConsultarArticulosPricipal':
-        $input = getJsonInput(); $data = $input['ConsultarArti'][0] ?? array();
+        $input = getJsonInput();
+        // El JS envia los filtros como propiedades planas, no dentro de un
+        // array anidado. Aceptamos ambos formatos por compatibilidad.
+        $data = $input['ConsultarArti'][0] ?? $input;
         $rows = Database::selectStoredTenant('sp_consultararticulospricipal', array(
-            '@ccod_cia' => $o->ccod_empresa, '@id_articulo' => $data['id_articulo'] ?? ''), $o);
-        $lst = array(); foreach ($rows as $f) {
-            $lst[] = array('cdsc_articulo' => strval($f[0] ?? ''), 'ncantidad' => strval($f[1] ?? ''),
-                'nimporte' => strval($f[2] ?? ''), 'dfch_doc' => strval($f[3] ?? ''));
-        } jsonResponse(array('d' => $lst)); break;
+            '@ccod_cia'     => $o->ccod_empresa,
+            '@CodArticulo'  => $data['CodArticulo'] ?? '',
+            '@NomAticulo'   => $data['NomAticulo']  ?? '',
+            '@TipArticulo'  => $data['TipArticulo'] ?? '',
+            '@Tributos'     => $data['Tributos']    ?? '',
+            '@Familia'      => $data['Familia']     ?? '',
+            '@UniMedida'    => $data['UniMedida']   ?? '',
+            '@Estado'       => $data['Estado']      ?? '',
+            '@id_articulo'  => $data['id_articulo'] ?? '',
+        ), $o);
+        $lst = array();
+        foreach ($rows as $f) {
+            $lst[] = array(
+                'ccod_articulo' => strval($f[0] ?? ''),
+                'cdsc_articulo' => strval($f[1] ?? ''),
+                'linea'         => strval($f[2] ?? ''),
+                'uni_medi'      => strval($f[3] ?? ''),
+                'ctip_articulo' => strval($f[4] ?? ''),
+                'estado'        => strval($f[5] ?? ''),
+                'cigv'          => strval($f[6] ?? ''),
+            );
+        }
+        jsonResponse(array('d' => $lst));
+        break;
     case 'CargarEstadisticasConsArti':
         $input = getJsonInput();
         $rows = Database::selectStoredTenant('sp_cargarestadisticasconsakti', array(

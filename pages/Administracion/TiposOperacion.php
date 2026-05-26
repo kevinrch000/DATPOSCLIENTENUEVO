@@ -92,8 +92,8 @@ ob_start();
                             Estado*</label>
                         <div class="col-sm-10">
                             <select class="disabled limpiar form-control moderno_tb" id="ddl_estado" disabled onclick="ObtenerNombreColumna(this)"> 
-                            <option value ="1">Activo</option>
-                            <option value ="0">Inactivo</option>
+                            <option value ="A">Activo</option>
+                            <option value ="I">Inactivo</option>
                             </select>
                         </div>
                     </div>

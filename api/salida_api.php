@@ -23,6 +23,11 @@ function normFecha($f) {
 switch ($m) {
 
 case 'ConsultarSalidas':
+    // FIX 74 / BUG 2.9: SP webDatpos_consultarSalidas ahora devuelve 10
+    // columnas: id, tienda, almacen, fecha, vserie, nnumero, ctipo
+    // (descripcion del TipoOperacion via JOIN), vobservacion, ntotal,
+    // ctipo_raw (codigo). Antes ctipo era el codigo 'S','VS','AE' y la
+    // columna "Tipo Operacion" del datatable mostraba el codigo crudo.
     $rows = $DA->ConsultarSalidas($o->ccod_empresa, $o);
     $lst = array();
     foreach ($rows as $f) {
@@ -35,7 +40,9 @@ case 'ConsultarSalidas':
             'dfecha'      => strval($f[3] ?? ''),
             'vserie'      => strval($f[4] ?? ''),
             'nnumero'     => strval($f[5] ?? ''),
-            'ctipo'       => strval($f[6] ?? ''),
+            'ctipo'       => strval($f[6] ?? ''),        // descripcion
+            'ctipo_raw'   => strval($f[9] ?? ($f[6] ?? '')), // codigo
+            'ntotal'      => strval($f[8] ?? ''),
             'vobservacion'=> strval($f[7] ?? ''),
         );
     }
