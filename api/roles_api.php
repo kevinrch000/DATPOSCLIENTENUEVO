@@ -201,12 +201,11 @@ switch ($method) {
                     $isChecked = ($st === true || $st === 1 || $st === '1'
                         || (is_string($st) && strtolower($st) === 'true'));
                     if ($isChecked && ($m['nivel'] ?? '') === 'Si') {
-                        $sqlAcc  = "EXEC webDatpos_insertarAcceso @ccod_cia=?, @id_rol=?, @cstatus='1', @corden=?, @ccod_usuario=?";
+                        $sqlAcc  = "EXEC webDatpos_insertarAcceso @ccod_empresa=?, @id_rol=?, @corden=?";
                         $stmtAcc = sqlsrv_query($conn, $sqlAcc, array(
                             $objUsuario->ccod_empresa,
                             $id_rol,
-                            $m['corden'] ?? '',
-                            $objUsuario->ccod_usuario
+                            $m['corden'] ?? ''
                         ));
                         if ($stmtAcc) sqlsrv_free_stmt($stmtAcc);
                     }
@@ -216,12 +215,11 @@ switch ($method) {
                     $isChecked = ($st === true || $st === 1 || $st === '1'
                         || (is_string($st) && strtolower($st) === 'true'));
                     if ($isChecked) {
-                        $sqlAcc2  = "EXEC webDatpos_insertarAcceso @ccod_cia=?, @id_rol=?, @cstatus='1', @corden=?, @ccod_usuario=?";
+                        $sqlAcc2  = "EXEC webDatpos_insertarAcceso @ccod_empresa=?, @id_rol=?, @corden=?";
                         $stmtAcc2 = sqlsrv_query($conn, $sqlAcc2, array(
                             $objUsuario->ccod_empresa,
                             $id_rol,
-                            $mod['corden'] ?? '',
-                            $objUsuario->ccod_usuario
+                            $mod['corden'] ?? ''
                         ));
                         if ($stmtAcc2) sqlsrv_free_stmt($stmtAcc2);
                     }
