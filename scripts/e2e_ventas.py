@@ -34,7 +34,6 @@ async def main():
             ('/pages/Ventas/AperturaCaja.php','apertura'),
             ('/pages/Ventas/CierreCaja.php','cierre'),
             ('/pages/Ventas/Facturacion.php','facturacion'),
-            ('/pages/Ventas/FacturaListaPrecio.php','factura_lista_precio'),
             ('/pages/Ventas/Clientes.php','clientes'),
             ('/pages/Ventas/Precios.php','precios'),
             ('/pages/Ventas/NotaCredito.php','nota_credito'),

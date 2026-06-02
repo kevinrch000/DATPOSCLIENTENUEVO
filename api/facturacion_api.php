@@ -469,8 +469,8 @@ switch ($m) {
     // ConsultarCuentas / ConsultarCuentaDetalles
     // ============================================================
     case 'ConsultarCuentas':
-        $referer = $_SERVER['HTTP_REFERER'] ?? '';
-        $ctip_cuenta = (stripos($referer, 'FacturaListaPrecio') !== false) ? '2' : '1';
+        // Solo se usa Facturacion (ctip_cuenta = '1'); FacturaListaPrecio fue eliminado.
+        $ctip_cuenta = '1';
         $rows = (new DACuenta())->ConsultarCuentas($o->ccod_empresa, $o->ccod_tiend, $o->ccod_caja, $ctip_cuenta, $o);
         $lst = array();
         foreach ($rows as $f) {

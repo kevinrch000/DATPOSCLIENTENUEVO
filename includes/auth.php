@@ -116,6 +116,8 @@ function emitirJwt($objBE) {
         'cem'  => $objBE->ccod_cliente_emis,
         'tkn'  => $objBE->ctoken,
         'rm'   => $objBE->rolMaster,
+        'su'   => $objBE->esSuperUsuario ? 1 : 0,
+        'org'  => $objBE->origenLogin,
         'ict'  => $objBE->id_ctusu,
         // Datos del tenant (consultaUsuario)
         'dir'  => $objBE->cdirec,
@@ -189,6 +191,8 @@ function _rebuildUsuarioFromJwt(array $p) {
     $obj->ccod_cliente_emis  = $p['cem']  ?? '';
     $obj->ctoken             = $p['tkn']  ?? '';
     $obj->rolMaster          = intval($p['rm'] ?? 0);
+    $obj->esSuperUsuario     = !empty($p['su']);
+    $obj->origenLogin        = $p['org']  ?? '';
     $obj->id_ctusu           = intval($p['ict'] ?? 0);
     // Datos del tenant
     $obj->cdirec             = $p['dir']  ?? '';

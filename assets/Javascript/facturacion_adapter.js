@@ -55,7 +55,6 @@
         'Bashboard':         { api: 'home_api.php',             param: 'method' },
         'Dashboard':          { api: 'home_api.php',             param: 'method' },
         'Factura':           { api: 'facturacion_api.php',      param: 'method' },
-        'FacturaListaPrecio': { api: 'facturacion_api.php',      param: 'method' },
         'ConsultaFormaPago':  { api: 'consultadocumento_api.php', param: 'method' },
         'ConsultaFormasPago': { api: 'consultadocumento_api.php', param: 'method' },
         'ConsultaOperAlmacen':{ api: 'consultadocumento_api.php', param: 'method' },
@@ -135,7 +134,6 @@
         '/Interfaces/Dashboard.aspx':                  '/Interfaces/Home.php',
         // Ventas / Facturacion
         '/Interfaces/Facturacion.aspx':                '/Ventas/Facturacion.php',
-        '/Interfaces/FacturaListaPrecio.aspx':         '/Ventas/FacturaListaPrecio.php',
         '/Interfaces/Factura.aspx':                    '/Ventas/Factura.php',
         '/Interfaces/NotaCredito.aspx':                '/Ventas/NotaCredito.php',
         '/Interfaces/NotaDebito.aspx':                 '/Ventas/NotaDebito.php',
