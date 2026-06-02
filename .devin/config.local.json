@@ -1,0 +1,10 @@
+{
+  "permissions": {
+    "allow": [
+      "Exec(test)",
+      "Exec(grep)",
+      "Exec(python)",
+      "Exec(php)"
+    ]
+  }
+}

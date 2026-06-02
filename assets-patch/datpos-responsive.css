@@ -1,0 +1,923 @@
+/* ================================================================
+ * datpos-responsive.css
+ * --------------------------------------------------------------
+ * Responsive override global para DatPOS.
+ *
+ * Breakpoints:
+ *   - >= 1200px : desktop wide
+ *   - 992px..1199px : desktop / laptop pequeño
+ *   - 768px..991px  : tablet horizontal (sidebar off-canvas)
+ *   - 481px..767px  : tablet vertical / móvil grande
+ *   - <= 480px      : móvil pequeño
+ *
+ * Estrategia:
+ *   - Sidebar fija de 250px en >= 992px (comportamiento original).
+ *   - En <= 991px el sidebar se vuelve off-canvas con backdrop.
+ *   - Contenido principal pasa a ocupar 100% en <= 991px.
+ *   - Tablas DataTables permanecen con scroll horizontal (ya estaba).
+ *   - Modales y formularios re-flow vertical en pantallas pequeñas.
+ *   - Tabs (nav-tabs) con scroll horizontal cuando no caben.
+ *   - Botones CRUD/Consulta apilados y centrados en móvil.
+ * ================================================================ */
+
+
+/* =========================================================
+ * 0. UTILIDADES GLOBALES
+ * ========================================================= */
+*,
+*::before,
+*::after { box-sizing: border-box; }
+
+html, body { max-width: 100%; overflow-x: hidden; }
+
+img { max-width: 100%; height: auto; }
+
+/* DataTables siempre con scroll horizontal cuando hace falta */
+.dataTables_wrapper,
+.table-responsive {
+    width: 100% !important;
+    overflow-x: auto !important;
+    -webkit-overflow-scrolling: touch;
+}
+
+/* Tablas dentro de wrappers: nunca obligar a ancho fijo */
+table.dataTable,
+.table {
+    width: 100% !important;
+    max-width: 100% !important;
+}
+
+/* Forzar comportamiento responsivo en formularios legacy con widths inline */
+.modern-page input[style*="width"],
+.modern-page select[style*="width"],
+.modern-page .form-control[style*="width"] {
+    max-width: 100% !important;
+}
+
+
+/* =========================================================
+ * 1. SIDEBAR OFF-CANVAS (<= 991px)
+ * ========================================================= */
+.dp-sidebar-backdrop {
+    display: none;
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(15, 24, 36, 0.55);
+    z-index: 990;
+    opacity: 0;
+    transition: opacity 0.25s ease;
+}
+
+body.dp-sidebar-open .dp-sidebar-backdrop {
+    display: block;
+    opacity: 1;
+}
+
+/* Botón hamburguesa visible siempre en móvil/tablet, oculto en escritorio */
+@media (min-width: 992px) {
+    /* Por defecto el hamburguesa sí funciona en desktop también, así
+       que no lo ocultamos — pero ya no es el único modo de navegar. */
+}
+
+@media (max-width: 991px) {
+    /* Sidebar fijo, off-canvas */
+    #menuver,
+    .nav-side-menu {
+        position: fixed !important;
+        top: 0 !important;
+        left: 0 !important;
+        width: 260px !important;
+        max-width: 80vw !important;
+        height: 100vh !important;
+        z-index: 1000 !important;
+        transform: translateX(-100%) !important;
+        transition: transform 0.28s ease !important;
+        overflow-y: auto !important;
+        overflow-x: hidden !important;
+    }
+
+    body.dp-sidebar-open #menuver,
+    body.dp-sidebar-open .nav-side-menu {
+        transform: translateX(0) !important;
+        box-shadow: 0 0 30px rgba(0, 0, 0, 0.35) !important;
+    }
+
+    /* Cuando el sidebar está oculto vía la clase legacy, no anular nuestro
+       comportamiento off-canvas */
+    #menuver.hiddenmenuvertical-menu,
+    .nav-side-menu.hiddenmenuvertical-menu {
+        transform: translateX(-100%) !important;
+    }
+
+    /* Bloquear scroll del body cuando el sidebar está abierto */
+    body.dp-sidebar-open {
+        overflow: hidden !important;
+    }
+
+    /* Contenido principal a 100% en móvil/tablet */
+    div.c-content,
+    #content {
+        position: relative !important;
+        left: 0 !important;
+        width: 100% !important;
+        margin-left: 0 !important;
+        box-shadow: none !important;
+    }
+
+    div.c-content header,
+    #content > header {
+        position: sticky !important;
+        top: 0 !important;
+        left: 0 !important;
+        width: 100% !important;
+        height: 56px !important;
+        z-index: 100 !important;
+    }
+
+    /* Botón hamburguesa visible y clicable en móvil (Site.css legacy lo
+       ocultaba con display:none — aquí lo forzamos a mostrarse). */
+    .c-menu-toggle,
+    div.c-content header span.c-menu-toggle,
+    #content header span.c-menu-toggle {
+        display: block !important;
+        position: relative !important;
+        width: 56px !important;
+        height: 56px !important;
+        font-size: 26px !important;
+        flex-shrink: 0;
+    }
+
+    /* Restaurar visibilidad del bloque de usuario (Site.css line 811 lo
+       ocultaba completo en móvil). Mostramos solo avatar/dropdown, no el
+       texto largo del nombre de empresa/usuario. */
+    #content header div.c-menu-user,
+    .c-menu-user {
+        display: flex !important;
+    }
+
+    header span.header-title {
+        font-size: 16px !important;
+        line-height: 56px !important;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        flex: 1 1 auto;
+        max-width: calc(100vw - 180px);
+    }
+
+    /* User menu / empresa: reducir en móvil */
+    .c-menu-user {
+        flex-shrink: 0;
+        gap: 8px;
+    }
+
+    .c-menu-user .info-name-type {
+        display: none !important; /* se ve por menú/perfil, ahorramos espacio */
+    }
+
+    /* Ocultamos el logo de empresa en móvil; dejamos solo el avatar de
+       usuario y el ícono de configuración (dropdown). */
+    .c-menu-user > div:first-child {
+        display: none !important;
+    }
+
+    .c-menu-user img,
+    .c-menu-user #idfoto {
+        width: 36px !important;
+        height: 36px !important;
+    }
+}
+
+@media (max-width: 480px) {
+    header span.header-title {
+        font-size: 14px !important;
+        max-width: calc(100vw - 130px);
+    }
+    .c-menu-user #idfoto { width: 32px !important; height: 32px !important; }
+}
+
+
+/* =========================================================
+ * 2. CONTENT WRAPPER — Padding/margen sensatos
+ * ========================================================= */
+.c-content-center,
+.c-content-center-detalle {
+    width: 92% !important;
+    max-width: 1400px;
+    padding-bottom: 40px;
+}
+
+@media (max-width: 991px) {
+    .c-content-center,
+    .c-content-center-detalle {
+        width: 96% !important;
+        margin-top: 16px !important;
+    }
+}
+
+@media (max-width: 767px) {
+    .c-content-center,
+    .c-content-center-detalle {
+        width: 100% !important;
+        padding: 0 12px !important;
+        margin-top: 12px !important;
+    }
+}
+
+
+/* =========================================================
+ * 3. MODERN-PAGE HEADER (título grande de cada módulo)
+ * ========================================================= */
+@media (max-width: 767px) {
+    .modern-page-header {
+        flex-wrap: wrap !important;
+        padding: 14px !important;
+        gap: 10px !important;
+    }
+    .modern-page-header .mph-icon {
+        width: 44px !important;
+        height: 44px !important;
+        font-size: 24px !important;
+        flex-shrink: 0;
+    }
+    .modern-page-header .mph-text h1 {
+        font-size: 18px !important;
+        margin: 0 !important;
+    }
+    .modern-page-header .mph-text p {
+        font-size: 12px !important;
+        margin: 2px 0 0 !important;
+    }
+    .modern-page-header .mph-chip {
+        font-size: 11px !important;
+        padding: 4px 10px !important;
+    }
+    .modern-page-header .mph-spacer { display: none; }
+}
+
+
+/* =========================================================
+ * 4. NAV-TABS — Scroll horizontal cuando no caben
+ * ========================================================= */
+.modern-page .nav-tabs,
+.nav-tabs {
+    display: flex !important;
+    flex-wrap: nowrap !important;
+    overflow-x: auto !important;
+    overflow-y: hidden !important;
+    -webkit-overflow-scrolling: touch;
+    white-space: nowrap;
+    scrollbar-width: thin;
+}
+
+.modern-page .nav-tabs::-webkit-scrollbar,
+.nav-tabs::-webkit-scrollbar { height: 4px; }
+
+.modern-page .nav-tabs::-webkit-scrollbar-thumb,
+.nav-tabs::-webkit-scrollbar-thumb {
+    background: rgba(40, 85, 111, 0.35);
+    border-radius: 4px;
+}
+
+.modern-page .nav-tabs > li,
+.nav-tabs > li {
+    flex-shrink: 0;
+}
+
+@media (max-width: 767px) {
+    .modern-page .nav-tabs > li > a,
+    .nav-tabs > li > a {
+        padding: 8px 12px !important;
+        font-size: 12px !important;
+    }
+    .tabcito {
+        font-size: 12px !important;
+        padding: 8px 10px !important;
+    }
+}
+
+
+/* =========================================================
+ * 5. FORMULARIOS — Labels y campos en columna en móvil
+ * ========================================================= */
+@media (max-width: 767px) {
+    .modern-page .moderno_lb,
+    .col-sm-2.moderno_lb,
+    .col-sm-3.moderno_lb,
+    .col-sm-4.moderno_lb {
+        width: 100% !important;
+        text-align: left !important;
+        padding-left: 4px !important;
+        margin-bottom: 4px !important;
+        margin-top: 8px !important;
+        float: none !important;
+        line-height: 1.4 !important;
+    }
+
+    .modern-page .row > [class*="col-"] > .col-sm-10,
+    .modern-page .row > [class*="col-"] > [class*="col-sm-"]:not(.moderno_lb) {
+        width: 100% !important;
+        float: none !important;
+        padding-left: 4px !important;
+        padding-right: 4px !important;
+    }
+
+    .modern-page .row {
+        margin-left: -8px !important;
+        margin-right: -8px !important;
+    }
+
+    .modern-page .row > [class*="col-"] {
+        padding-left: 8px !important;
+        padding-right: 8px !important;
+    }
+
+    .moderno_tb,
+    .form-control {
+        width: 100% !important;
+        max-width: 100% !important;
+        box-sizing: border-box !important;
+        font-size: 14px !important;
+        padding: 8px 10px !important;
+    }
+}
+
+
+/* =========================================================
+ * 6. BOTONES CRUD / CONSULTA — Apilados y abajo en móvil
+ * ========================================================= */
+@media (max-width: 991px) {
+    .adminActions {
+        position: relative !important;
+        top: auto !important;
+        right: auto !important;
+        margin: 16px auto !important;
+        display: flex !important;
+        justify-content: center !important;
+        width: 100% !important;
+        padding: 0 12px !important;
+    }
+
+    .adminButtons {
+        flex-wrap: wrap !important;
+        justify-content: center !important;
+        gap: 6px !important;
+    }
+}
+
+@media (max-width: 480px) {
+    .adminButtons .botonesnuevos a {
+        width: 40px !important;
+        height: 40px !important;
+    }
+    .adminButtons .botonesnuevos {
+        width: 40px !important;
+        flex: 0 0 40px !important;
+    }
+}
+
+
+/* =========================================================
+ * 7. MODALES — Adaptan a la pantalla
+ * ========================================================= */
+.modal-dialog {
+    margin: 30px auto !important;
+}
+
+@media (max-width: 991px) {
+    .modal-dialog {
+        width: 92vw !important;
+        max-width: 92vw !important;
+        margin: 20px auto !important;
+        padding: 0 !important;
+    }
+
+    .modal-dialog.modal-lg,
+    .modal-lg .modal-dialog {
+        width: 95vw !important;
+        max-width: 95vw !important;
+    }
+
+    .modal-content {
+        max-height: calc(100vh - 40px);
+        overflow-y: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    .modal-body {
+        padding: 12px 14px !important;
+    }
+
+    .modal-header,
+    .modal-footer {
+        padding: 10px 14px !important;
+    }
+}
+
+@media (max-width: 480px) {
+    .modal-dialog {
+        width: 100vw !important;
+        max-width: 100vw !important;
+        margin: 0 !important;
+        border-radius: 0 !important;
+    }
+    .modal-content {
+        min-height: 100vh;
+        border-radius: 0 !important;
+    }
+}
+
+
+/* =========================================================
+ * 8. SWAL2 / SWEETALERT — adapta en pantallas chicas
+ * ========================================================= */
+@media (max-width: 480px) {
+    .swal2-popup {
+        width: 92vw !important;
+        max-width: 92vw !important;
+        padding: 18px !important;
+    }
+    .swal2-title { font-size: 18px !important; }
+    .swal2-html-container { font-size: 14px !important; }
+}
+
+
+/* =========================================================
+ * 9. JQUERY UI DIALOG / DATEPICKER — limita en móvil
+ * ========================================================= */
+.ui-dialog {
+    max-width: 95vw !important;
+    box-sizing: border-box;
+}
+
+@media (max-width: 480px) {
+    .ui-datepicker {
+        max-width: 92vw !important;
+        box-sizing: border-box;
+    }
+}
+
+
+/* =========================================================
+ * 10. SECTIONS / CARDS modernas
+ * ========================================================= */
+@media (max-width: 767px) {
+    .modern-section-title {
+        font-size: 14px !important;
+        margin-top: 18px !important;
+    }
+    .modern-section-title .material-icons {
+        font-size: 18px !important;
+    }
+}
+
+
+/* =========================================================
+ * 11. DATATABLES — controles superiores apilables
+ * ========================================================= */
+@media (max-width: 767px) {
+    .dataTables_wrapper .dataTables_length,
+    .dataTables_wrapper .dataTables_filter,
+    .dataTables_wrapper .dataTables_info,
+    .dataTables_wrapper .dataTables_paginate {
+        float: none !important;
+        text-align: left !important;
+        margin: 6px 0 !important;
+        width: 100% !important;
+    }
+
+    .dataTables_wrapper .dataTables_filter input {
+        width: 100% !important;
+        margin-left: 0 !important;
+    }
+
+    .dataTables_wrapper .dataTables_paginate { text-align: center !important; }
+
+    /* Permite scroll horizontal sin que rompa la página */
+    .dataTables_scrollHead,
+    .dataTables_scrollBody {
+        overflow-x: auto !important;
+    }
+
+    table.dataTable td,
+    table.dataTable th {
+        font-size: 12px !important;
+        padding: 6px 8px !important;
+        white-space: nowrap;
+    }
+}
+
+
+/* =========================================================
+ * 12. SIDEBAR INTERIOR — Scroll en sidebars largos
+ * ========================================================= */
+#listOpciones {
+    max-height: calc(100vh - 60px);
+    overflow-y: auto;
+    overflow-x: hidden;
+    scrollbar-width: thin;
+}
+
+#listOpciones::-webkit-scrollbar { width: 6px; }
+#listOpciones::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.18);
+    border-radius: 3px;
+}
+
+
+/* =========================================================
+ * 13. DASHBOARD / TARJETAS — Re-flow a una columna
+ * ========================================================= */
+@media (max-width: 767px) {
+    .col-md-6,
+    .col-md-4,
+    .col-md-3,
+    .col-md-12,
+    .col-lg-6,
+    .col-lg-4,
+    .col-lg-3 {
+        width: 100% !important;
+        float: none !important;
+        margin-bottom: 12px;
+    }
+}
+
+
+/* =========================================================
+ * 14. INPUT DE BÚSQUEDA Y SELECTS LARGOS
+ * ========================================================= */
+@media (max-width: 767px) {
+    select.form-control,
+    input.form-control,
+    textarea.form-control {
+        font-size: 14px !important;
+    }
+
+    /* Datepickers y autocompletes inline */
+    .ui-autocomplete {
+        max-width: 92vw !important;
+    }
+}
+
+
+/* =========================================================
+ * 15. FIX BOTÓN HAMBURGUESA — siempre clicable
+ * ========================================================= */
+#btnMenu,
+span.c-menu-toggle {
+    cursor: pointer;
+    user-select: none;
+    -webkit-tap-highlight-color: transparent;
+}
+
+/* Garantizar que el hamburguesa quede por encima de la c-menu-user
+   (que es position:absolute right:0 y eventualmente puede tapar el
+   click a la izquierda si su contenido se sobre-dimensiona). */
+@media (max-width: 991px) {
+    #btnMenu,
+    div.c-content header span.c-menu-toggle,
+    #content header span.c-menu-toggle {
+        z-index: 101 !important;        /* el header tiene z-index:100 */
+        pointer-events: auto !important;
+        touch-action: manipulation;     /* anular delay de 300ms en iOS */
+    }
+
+    /* El bloque de usuario (avatar + dropdown) va a la derecha del
+       header sin invadir el hamburguesa. */
+    div.c-content header div.c-menu-user,
+    #content header div.c-menu-user,
+    .c-menu-user {
+        z-index: 100 !important;
+        right: 8px !important;
+    }
+}
+
+/* =========================================================
+ * 16. FIX z-index SweetAlert / advertencias sobre modales (BUG 2.1, 2.14)
+ *
+ * Las advertencias se mostraban por DEBAJO de los modales de Bootstrap
+ * (el modal usa z-index 1050; el backdrop 1040). SweetAlert y los
+ * popovers de validación tenían valores menores, por lo que la
+ * advertencia quedaba oculta detrás del modal y el usuario no veia
+ * el motivo del rechazo (ej. numerador con caracteres incorrectos).
+ * Forzamos cualquier overlay de alerta/aviso a quedar siempre por
+ * encima del backdrop y del modal.
+ * ========================================================= */
+.swal-overlay,
+.swal2-container,
+.sweet-overlay,
+.sweet-alert {
+    z-index: 1100000000 !important;
+}
+/* El popup en sí también debe quedar encima */
+.swal2-popup,
+.sweet-alert {
+    z-index: 1100000010 !important;
+}
+
+.popover.fade.bottom.in,
+.tooltip.in,
+.alert.alert-warning,
+.alert.alert-danger,
+.alert.alert-info {
+    z-index: 19000 !important;
+}
+
+/* Advertencias del editor in-place de DataTables (BUG 2.1) */
+div.DTE_Inline,
+div.DTE_Inline_Buttons,
+div.DTE_Field_Error {
+    z-index: 19500 !important;
+    position: relative !important;
+}
+
+
+/* =========================================================
+ * 17. SIDEBAR — Fix completo: ancho, texto, íconos, responsive
+ *
+ * REGLAS DE ORO para no romper el layout legacy:
+ *  1. Los <a> dentro de <li> tienen los íconos con position:ABSOLUTE
+ *     heredado de Site.css / MenuVer.css. NO cambiamos position ni
+ *     padding-left de los <a> que ya tienen los valores correctos en
+ *     Modern-UI.css (56px) y Site.css (65px).
+ *  2. Solo corregimos: height fijo → auto, line-height fijo → auto,
+ *     text-transform → none, font-size, white-space.
+ *  3. El ancho del sidebar pasa de 250 a 270px. El c-content se ajusta.
+ *  4. Animaciones y colores viven en Modern-UI.css, solo refinamos aquí.
+ * ========================================================= */
+
+/* ─────────────────────────────────────────────────────────
+   ANCHO DEL SIDEBAR Y AJUSTE DE c-content
+   ───────────────────────────────────────────────────────── */
+#menuver,
+.nav-side-menu {
+    width: 270px !important;
+    overflow-y: auto !important;
+    overflow-x: hidden !important;
+}
+
+/* c-content debe empezar donde termina el sidebar */
+div.c-content {
+    left: 270px !important;
+    width: calc(100% - 270px) !important;
+}
+
+div.c-content header {
+    left: 270px !important;
+    width: calc(100% - 270px) !important;
+}
+
+/* Sidebar colapsado (botón hamburger) → contenido a pantalla completa */
+div.c-content.hiddenmenuvertical-header {
+    left: 65px !important;
+    width: calc(100% - 65px) !important;
+}
+div.c-content.hiddenmenuvertical-header header {
+    left: 65px !important;
+    width: calc(100% - 65px) !important;
+}
+
+/* ─────────────────────────────────────────────────────────
+   LI DE PRIMER NIVEL — altura flexible, sin corte de texto
+   Los íconos ya tienen position:absolute con top/left fijos
+   (ej. top:12px left:20px desde Site.css y Modern-UI.css).
+   Solo necesitamos que el li sea alto suficiente para contenerlos.
+   ───────────────────────────────────────────────────────── */
+.nav-side-menu > ul > li,
+.nav-side-menu #menu-content > li {
+    height: auto !important;
+    min-height: 46px !important;
+    line-height: 46px !important;
+}
+
+/* El <a> del nivel 1 hereda line-height del li, así que el ícono
+   (position:absolute, top:~12px) queda centrado automáticamente.
+   Solo quitamos mayúsculas y permitimos wrap si el nombre es largo. */
+.nav-side-menu > ul > li > a,
+.nav-side-menu #menu-content > li > a {
+    text-transform: none !important;
+    white-space: normal !important;
+    word-break: break-word !important;
+    font-size: 13px !important;
+    font-weight: 500 !important;
+    line-height: 1.3 !important;
+    /* padding-left lo pone Modern-UI.css (56px) — no lo sobreescribimos */
+    padding-top: 14px !important;
+    padding-bottom: 14px !important;
+    display: block !important;
+}
+
+/* ─────────────────────────────────────────────────────────
+   SUB-MENÚ NIVEL 2 (cabecera: Tablas, Operaciones, etc.)
+   Los íconos aquí son chevron con: top:12px, left:33px (inline)
+   ───────────────────────────────────────────────────────── */
+.nav-side-menu .sub-menu > li {
+    height: auto !important;
+    min-height: 38px !important;
+    line-height: 38px !important;
+}
+
+.nav-side-menu .sub-menu > li > a {
+    text-transform: none !important;
+    white-space: normal !important;
+    word-break: break-word !important;
+    font-size: 12.5px !important;
+    line-height: 1.3 !important;
+    padding-top: 10px !important;
+    padding-bottom: 10px !important;
+    display: block !important;
+}
+
+/* ─────────────────────────────────────────────────────────
+   SUB-MENÚ NIVEL 3 (ítems finales: Almacenes, Artículos…)
+   Íconos chevron: top:12px, left:37px (inline)
+   ───────────────────────────────────────────────────────── */
+.nav-side-menu .sub-menu .sub-menu > li {
+    height: auto !important;
+    min-height: 34px !important;
+    line-height: 34px !important;
+}
+
+.nav-side-menu .sub-menu .sub-menu > li > a {
+    text-transform: none !important;
+    white-space: normal !important;
+    word-break: break-word !important;
+    font-size: 12px !important;
+    line-height: 1.3 !important;
+    padding-top: 8px !important;
+    padding-bottom: 8px !important;
+    display: block !important;
+}
+
+/* ─────────────────────────────────────────────────────────
+   ÍTEM ESTÁTICO DASHBOARD (#dp-static-dashboard)
+   Generado en el layout_master.php — texto siempre cabe en una línea
+   ───────────────────────────────────────────────────────── */
+.dp-static-item {
+    height: auto !important;
+    min-height: 46px !important;
+    line-height: 46px !important;
+    border-bottom: 1px solid rgba(255,255,255,0.08) !important;
+}
+
+.dp-static-item a,
+#dp-static-dashboard a {
+    text-transform: none !important;
+    white-space: nowrap !important;
+    font-size: 13px !important;
+    font-weight: 600 !important;
+    line-height: 46px !important;
+    display: flex !important;
+    align-items: center !important;
+    gap: 10px !important;
+    padding-left: 18px !important;
+    color: rgba(255,255,255,0.9) !important;
+    transition: color 0.15s ease !important;
+}
+
+.dp-static-item a i.material-icons,
+#dp-static-dashboard a i.material-icons {
+    font-size: 20px !important;
+    flex-shrink: 0 !important;
+    opacity: 0.85;
+}
+
+.dp-static-item:hover a,
+#dp-static-dashboard:hover a {
+    color: #fff !important;
+}
+
+.dp-active > a,
+.dp-active a {
+    color: #fff !important;
+    font-weight: 700 !important;
+}
+
+/* ─────────────────────────────────────────────────────────
+   #Ul1 — CERRAR SESIÓN (también generado en layout_master.php)
+   Tiene estilos en línea en el layout_master; solo ajustamos lo esencial
+   ───────────────────────────────────────────────────────── */
+#Ul1 > li {
+    height: 42px !important;
+    line-height: 42px !important;
+}
+
+#Ul1 > li > a {
+    text-transform: none !important;
+    font-size: 13px !important;
+    white-space: nowrap !important;
+    /* padding-left y colores ya los pone el layout_master inline */
+}
+
+/* ─────────────────────────────────────────────────────────
+   HOVER Y ESTADO ACTIVO — completamos Modern-UI.css
+   ───────────────────────────────────────────────────────── */
+
+/* Hover en nivel 1 */
+.nav-side-menu > ul > li:hover,
+.nav-side-menu #menu-content > li:hover {
+    background: rgba(255,255,255,0.08) !important;
+    border-left: 3px solid #ffd54f !important;
+    transition: background 0.18s ease, border-color 0.18s ease !important;
+}
+
+/* Hover en sub-menú nivel 2 */
+.nav-side-menu .sub-menu > li:hover {
+    background: rgba(255,255,255,0.06) !important;
+    transition: background 0.15s ease !important;
+}
+
+/* Hover en ítems finales nivel 3 */
+.nav-side-menu .sub-menu .sub-menu > li:hover {
+    background: rgba(255,255,255,0.10) !important;
+    transition: background 0.12s ease !important;
+}
+
+/* Ítem activo nivel 3 */
+.nav-side-menu .sub-menu .sub-menu > li.active > a,
+.nav-side-menu .sub-menu .sub-menu > li > a.active {
+    color: #fff !important;
+    font-weight: 600 !important;
+}
+
+/* Color de texto al hacer hover en todos los niveles */
+.nav-side-menu li:hover > a {
+    color: #fff !important;
+}
+
+/* ─────────────────────────────────────────────────────────
+   ANIMACIÓN DE LOS ÍCONOS IMAGEN (chevron + módulo)
+   No cambiar position (absolute legacy); solo suavizar opacidad
+   ───────────────────────────────────────────────────────── */
+.nav-side-menu li > a > img {
+    transition: opacity 0.18s ease !important;
+    opacity: 0.80 !important;
+}
+
+.nav-side-menu li:hover > a > img {
+    opacity: 1 !important;
+}
+
+/* ─────────────────────────────────────────────────────────
+   SCROLLBAR DEL SIDEBAR
+   ───────────────────────────────────────────────────────── */
+#menuver::-webkit-scrollbar,
+.nav-side-menu::-webkit-scrollbar { width: 4px; }
+#menuver::-webkit-scrollbar-thumb,
+.nav-side-menu::-webkit-scrollbar-thumb {
+    background: rgba(255,255,255,0.22);
+    border-radius: 2px;
+}
+#menuver::-webkit-scrollbar-track,
+.nav-side-menu::-webkit-scrollbar-track { background: transparent; }
+
+/* ─────────────────────────────────────────────────────────
+   RESPONSIVE — tablet y móvil (off-canvas via datpos-responsive.js)
+   En ≤ 991px el sidebar se oculta con translateX(-100%).
+   El contenido pasa a ocupar el 100% del viewport.
+   ───────────────────────────────────────────────────────── */
+@media (max-width: 991px) {
+    #menuver,
+    .nav-side-menu {
+        width: 270px !important;
+        max-width: 84vw !important;
+    }
+
+    div.c-content {
+        left: 0 !important;
+        width: 100% !important;
+    }
+
+    div.c-content header {
+        left: 0 !important;
+        width: 100% !important;
+    }
+}
+
+@media (max-width: 480px) {
+    #menuver,
+    .nav-side-menu {
+        width: 85vw !important;
+        max-width: 320px !important;
+    }
+}
+
+/* ─────────────────────────────────────────────────────────
+   DESKTOP ANCHO ≥ 1400px — sidebar algo más ancho
+   ───────────────────────────────────────────────────────── */
+@media (min-width: 1400px) {
+    #menuver,
+    .nav-side-menu {
+        width: 290px !important;
+    }
+
+    div.c-content {
+        left: 290px !important;
+        width: calc(100% - 290px) !important;
+    }
+
+    div.c-content header {
+        left: 290px !important;
+        width: calc(100% - 290px) !important;
+    }
+}

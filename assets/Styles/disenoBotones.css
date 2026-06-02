@@ -1,0 +1,111 @@
+.color-popup { 
+  color:#ec6a5d; 
+  margin:-11px;
+  padding-left:8px;
+}
+
+.color-popup-verde { 
+  color:#74c776; 
+  margin:-11px;
+  padding-left:8px;
+}
+ 
+
+.color-buscadores { 
+  color:#ec6a5d; 
+  margin:-11px;
+  padding-left:8px;
+}
+
+/* ── Botones de búsqueda SUNAT / DNI ── */
+.btn-lookup {
+  cursor: pointer !important;
+  border: 1px solid #d0d0d0;
+  background-color: #f8f9fa;
+  color: #495057;
+  font-weight: 600;
+  font-size: 12px;
+  letter-spacing: 0.3px;
+  padding: 6px 14px;
+  border-radius: 4px;
+  transition: all 0.25s ease;
+  position: relative;
+  overflow: hidden;
+}
+.btn-lookup i.fa {
+  margin-right: 4px;
+  transition: transform 0.25s ease;
+}
+.btn-lookup:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 3px 8px rgba(0,0,0,0.15);
+}
+.btn-lookup:active {
+  transform: translateY(0px);
+  box-shadow: 0 1px 3px rgba(0,0,0,0.12);
+}
+.btn-lookup:focus {
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(34,138,201,0.3);
+}
+.btn-lookup:hover i.fa {
+  transform: scale(1.15);
+}
+
+/* SUNAT - tono naranja/rojo */
+.btn-lookup-sunat {
+  border-color: #e8734a;
+  color: #d35530;
+  background: linear-gradient(135deg, #fff5f2 0%, #ffeee8 100%);
+}
+.btn-lookup-sunat:hover {
+  background: linear-gradient(135deg, #ff6b3d 0%, #e8552d 100%);
+  color: #ffffff;
+  border-color: #e8552d;
+}
+.btn-lookup-sunat:active {
+  background: linear-gradient(135deg, #d44a22 0%, #c43e18 100%);
+  color: #ffffff;
+}
+
+/* DNI - tono azul */
+.btn-lookup-dni {
+  border-color: #4a9fe8;
+  color: #2d78c4;
+  background: linear-gradient(135deg, #f2f8ff 0%, #e8f2ff 100%);
+}
+.btn-lookup-dni:hover {
+  background: linear-gradient(135deg, #3d9aff 0%, #2d78e8 100%);
+  color: #ffffff;
+  border-color: #2d78e8;
+}
+.btn-lookup-dni:active {
+  background: linear-gradient(135deg, #225cc4 0%, #1a4da8 100%);
+  color: #ffffff;
+}
+
+/* Estado de carga (spinning) */
+.btn-lookup.btn-lookup--loading {
+  pointer-events: none;
+  opacity: 0.7;
+}
+.btn-lookup.btn-lookup--loading i.fa {
+  animation: spin-lookup 0.8s linear infinite;
+}
+@keyframes spin-lookup {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+
+.modal {
+    overflow: hidden;
+    left: 519px;
+    top: 68px;
+    right: 0;
+    bottom: 0;
+}
+
+.modal-dialog {
+    margin-right: 0;
+    margin-left: 0;
+}

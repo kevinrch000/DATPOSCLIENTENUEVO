@@ -1,0 +1,892 @@
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-show-password/1.0.3/bootstrap-show-password.min.js"></script>
+    <link href="../Styles/font-awesome-4.7.0/css/font-awesome.min.css" rel="stylesheet" type="text/css" />
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css" />
+    <link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700|Roboto+Slab:400,700|Material+Icons">
+    <input id="operacion" type="hidden" runat="server" />
+
+    <script src="../Javascript/Bashboard.js" type="text/javascript"></script>
+    <link href="../css/material-dashboard.css?v=2.1.2" rel="stylesheet">
+    <%--Libreria para General Exel--%>
+    <script src="../Javascript/FileSaver.js" type="text/javascript"></script>
+
+    <link href="../Diagramas/DiagramaPastel.css" rel="stylesheet" type="text/css" />
+    <script src="../Diagramas/highcharts.js" type="text/javascript"></script>
+    <script src="../Diagramas/accessibility.js" type="text/javascript"></script>
+    <script src="../Diagramas/data.js" type="text/javascript"></script>
+    <script src="../Diagramas/exporting.js" type="text/javascript"></script>
+    <label id="lblid_rol" style="display: none;"><%Response.Write(Session("objBEUsuario").rolMaster)%></label>
+
+
+    <div class="c-content-center">
+        <ul class="nav nav-tabs" id="ulOpciones" style="display: none;">
+            <li onclick="tab_Reporte();" style="display: none;" class="active">
+                <a data-toggle="tab" class="tabcito" href="#" style="color: #228ac9; font-size: 17px;"></a></li>
+
+            <li onclick="tab_Reporte();">
+                <a data-toggle="tab" class="tabcito" href="#Reporte" style="color: #228ac9; font-size: 17px;">Reporte</a></li>
+            <li onclick="tab_DelDia();">
+                <a data-toggle="tab" href="#DelDia" class="tabcito" style="color: #228ac9; font-size: 17px;">Del Día</a></li>
+            <li onclick="tab_PorProducto();">
+                <a data-toggle="tab" href="#PorProducto" class="tabcito" style="color: #228ac9; font-size: 17px;">Ventas por Articulo</a></li>
+            <li onclick="tab_kardex();">
+                <a data-toggle="tab" href="#Kardex" class="tabcito" style="color: #228ac9; font-size: 17px;">Kardex</a></li>
+            <li onclick="tab_Clientes();">
+                <a data-toggle="tab" href="#Clientes" class="tabcito" style="color: #228ac9; font-size: 17px;">Clientes</a></li>
+        </ul>
+        <div class="tab-content" id="divPestanas" style="display: none;">
+            <!-- Reporte -->
+            <div id="Reporte" class="tab-pane in active " style="padding: 13px;">
+                <div class="row">
+                    <div class="col-sm-11" style="padding-top: 10px;">
+                    </div>
+                    <div class="col-sm-1" style="padding-top: 10px;">
+                        <a href="#" title="Limpiar" onclick="EjecutarReporte();">
+                            <img src="../Styles/images/icon_check.png" style="background-color: #f0ad4e; width: 29px;" />
+                        </a><a href="#" title="Limpiar" onclick="LimpiarReporte();">
+                            <img src="../Styles/images/icon_limpiar.png" style="background-color: #21b5d6; width: 29px;" />
+                        </a>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-sm-4" style="padding-top: 10px;">
+                        <label class="col-sm-3 moderno_lb">
+                            Tienda</label>
+                        <div class="col-sm-9">
+                            <select class="disabled limpiar form-control moderno_tb" id="txtTiendaReporte">
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-sm-4" style="padding-top: 10px;">
+                        <label class="col-sm-3 moderno_lb">
+                            Fecha Desde</label>
+                        <div class="col-sm-9">
+                            <input id="txtfchDesdeReporte" maxlength="10" type="text" class="limpiar form-control moderno_tb"
+                                autocomplete="off" placeholder=" " runat="server" />
+                        </div>
+                    </div>
+                    <div class="col-sm-4" style="padding-top: 10px;">
+                        <label class="col-sm-3 moderno_lb">
+                            Fecha Hasta</label>
+                        <div class="col-sm-9">
+                            <input id="txtfchHastaReporte" maxlength="10" type="text" class="limpiar form-control moderno_tb"
+                                autocomplete="off" placeholder=" " runat="server" />
+                        </div>
+                    </div>
+                </div>
+
+                <div id="DivOpcionAdmin" class="row">
+                    <div class="col-lg-3 col-md-6 col-sm-6">
+
+                        <div class="card card-stats">
+                            <div class="card-header card-header-warning card-header-icon">
+                                <div class="card-icon" style="background: #4BBCF4;">
+                                    <i class="material-icons">groups</i>
+                                </div>
+                                <p class="card-category">Clientes Guardados</p>
+                                <h3 id="txtCantUsuario" class="card-title">0</h3>
+                            </div>
+                            <div class="card-footer">
+                                <div class="stats">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-lg-3 col-md-6 col-sm-6">
+                        <div class="card card-stats">
+                            <div class="card-header card-header-warning card-header-icon">
+                                <div class="card-icon" style="background: #61C0BF;">
+                                    <i class="material-icons">money</i>
+                                </div>
+                                <p class="card-category">Importe de Ventas</p>
+                                <h3 id="txtVentaDelDia" class="card-title">0</h3>
+                            </div>
+                            <div class="card-footer">
+                                <div class="stats">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-lg-3 col-md-6 col-sm-6">
+                        <div class="card card-stats">
+                            <div class="card-header card-header-warning card-header-icon">
+                                <div class="card-icon">
+                                    <i class="material-icons">money</i>
+                                </div>
+                                <p class="card-category">Importe de Descuento</p>
+                                <h3 id="txtCantUsuarios" class="card-title">0</h3>
+                            </div>
+                            <div class="card-footer">
+                                <div class="stats">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+
+
+                    <div class="col-lg-3 col-md-6 col-sm-6">
+                        <div class="card card-stats">
+                            <div class="card-header card-header-success card-header-icon">
+                                <div class="card-icon">
+                                    <i class="material-icons">description</i>
+                                </div>
+                                <p class="card-category">Documentos Generados</p>
+                                <h3 id="txtUsuariosRegistrados" class="card-title">0</h3>
+                            </div>
+                            <div class="card-footer">
+                                <div class="stats">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+                <div id="DivDashboardAdmin" class="row">
+                    <div class="col-sm-6">
+                        <div id="container">
+                        </div>
+                    </div>
+                    <div class="col-sm-6">
+                        <div id="containerUsuario">
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- DelDia -->
+            <div id="DelDia" class="tab-pane in active " style="padding: 13px;">
+                <div class="row">
+                    <div class="col-sm-4" style="padding-top: 10px;">
+
+                        <h4 style="font-size: 16PX; font-weight: bold; margin-bottom: 30px; margin-top: 30px; text-align: center;">Productos más vendidos </h4>
+                        <table id="tbProductosDelDia" class="display" style="width: 100%;">
+                            <colgroup>
+                                <col style="width: 10%"></col>
+                                <col style="width: 5%"></col>
+                            </colgroup>
+                            <thead id="thProductosDelDia">
+                                <tr>
+                                    <th style="padding: 6px 5px; text-align: left; border: solid 1px #e8eef4; background-color: #999;">Producto</th>
+                                    <th style="padding: 6px 5px; text-align: left; border: solid 1px #e8eef4; background-color: #999;">Importe total</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                            </tbody>
+                        </table>
+
+                    </div>
+                    <div class="col-sm-4" style="padding-top: 10px;">
+                        <h4 style="font-size: 16PX; font-weight: bold; margin-bottom: 30px; margin-top: 30px; text-align: center;">Raking de Vendedores</h4>
+                        <table id="tbVendedoresDelDia">
+                            <colgroup>
+                                <col style="width: 10%"></col>
+                                <col style="width: 5%"></col>
+                            </colgroup>
+                            <thead id="thVendedoresDelDia">
+                                <tr>
+                                    <th style="padding: 6px 5px; text-align: left; border: solid 1px #e8eef4; background-color: #999;">Vendedor</th>
+                                    <th style="padding: 6px 5px; text-align: left; border: solid 1px #e8eef4; background-color: #999;">Importe total</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                            </tbody>
+                        </table>
+
+
+                    </div>
+                    <div class="col-sm-4" style="padding-top: 10px;">
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- Tabla para Exportar -->
+            <div id="DivtableKardexExel" style="display: none;">
+                <table id="tableKardexExel" class="table table-bordered TablaIndex table-striped dataTable no-footer"
+                    border="2px" cellspacing="0" width="2000">
+                    <thead>
+                        <tr>
+                            <th style="padding: 6px 5px; text-align: left; border: solid 1px #e8eef4; background-color: #999;"></th>
+                            <th style="padding: 6px 5px; text-align: left; border: solid 1px #e8eef4; background-color: #999;"></th>
+                            <th style="padding: 6px 5px; text-align: left; border: solid 1px #e8eef4; background-color: #999;"></th>
+                            <th style="padding: 6px 5px; text-align: left; border: solid 1px #e8eef4; background-color: #999;"></th>
+                            <th style="padding: 6px 5px; text-align: left; border: solid 1px #e8eef4; background-color: #999;">Ingreso</th>
+                            <th style="padding: 6px 5px; text-align: left; border: solid 1px #e8eef4; background-color: #999;"></th>
+                            <th style="padding: 6px 5px; text-align: left; border: solid 1px #e8eef4; background-color: #999;"></th>
+                            <th style="padding: 6px 5px; text-align: left; border: solid 1px #e8eef4; background-color: #999;">Salida</th>
+                            <th style="padding: 6px 5px; text-align: left; border: solid 1px #e8eef4; background-color: #999;"></th>
+                            <th style="padding: 6px 5px; text-align: left; border: solid 1px #e8eef4; background-color: #999;"></th>
+                            <th style="padding: 6px 5px; text-align: left; border: solid 1px #e8eef4; background-color: #999;">Saldo</th>
+                            <th style="padding: 6px 5px; text-align: left; border: solid 1px #e8eef4; background-color: #999;"></th>
+                        </tr>
+                        <tr>
+                            <th style="padding: 6px 5px; text-align: left; border: solid 1px #e8eef4; background-color: #999;">Doc. Referencia</th>
+                            <th style="padding: 6px 5px; text-align: left; border: solid 1px #e8eef4; background-color: #999;">Fecha Doc.</th>
+                            <th style="padding: 6px 5px; text-align: left; border: solid 1px #e8eef4; background-color: #999;">Nombre de Artículo</th>
+                            <th style="padding: 6px 5px; text-align: left; border: solid 1px #e8eef4; background-color: #999;">Cantidad</th>
+                            <th style="padding: 6px 5px; text-align: left; border: solid 1px #e8eef4; background-color: #999;">Costo</th>
+                            <th style="padding: 6px 5px; text-align: left; border: solid 1px #e8eef4; background-color: #999;">Total</th>
+                            <th style="padding: 6px 5px; text-align: left; border: solid 1px #e8eef4; background-color: #999;">Cantidad</th>
+                            <th style="padding: 6px 5px; text-align: left; border: solid 1px #e8eef4; background-color: #999;">Costo</th>
+                            <th style="padding: 6px 5px; text-align: left; border: solid 1px #e8eef4; background-color: #999;">Total</th>
+                            <th style="padding: 6px 5px; text-align: left; border: solid 1px #e8eef4; background-color: #999;">Cantidad</th>
+                            <th style="padding: 6px 5px; text-align: left; border: solid 1px #e8eef4; background-color: #999;">Costo</th>
+                            <th style="padding: 6px 5px; text-align: left; border: solid 1px #e8eef4; background-color: #999;">Total</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    </tbody>
+                </table>
+            </div>
+
+            <div id="DivtableClienteExel" style="display: none;">
+                <table id="tableClienteExel" class="table table-bordered TablaIndex table-striped dataTable no-footer"
+                    border="2px" cellspacing="0" width="2000">
+                    <thead>
+                        <th style="padding: 6px 5px; text-align: left; border: solid 1px #e8eef4; background-color: #999;">Cliente</th>
+                        <th style="padding: 6px 5px; text-align: left; border: solid 1px #e8eef4; background-color: #999;">Usuario</th>
+                        <th style="padding: 6px 5px; text-align: left; border: solid 1px #e8eef4; background-color: #999;">Doc. Ref</th>
+                        <th style="padding: 6px 5px; text-align: left; border: solid 1px #e8eef4; background-color: #999;">Forma de Pago</th>
+                        <th style="padding: 6px 5px; text-align: left; border: solid 1px #e8eef4; background-color: #999;">Fecha Doc.</th>
+                        <th style="padding: 6px 5px; text-align: left; border: solid 1px #e8eef4; background-color: #999;">Monto</th>
+                    </thead>
+                    <tbody>
+                    </tbody>
+                </table>
+            </div>
+
+            <div id="Divtable_visibleDocPorProductoExel" style="display: none;">
+                <table id="table_visibleDocPorProductoExel" class="table table-bordered TablaIndex table-striped dataTable no-footer"
+                    border="2px" cellspacing="0" width="2000">
+                    <thead>
+                        <tr>
+                            <th style="padding: 6px 5px; text-align: left; border: solid 1px #e8eef4; background-color: #999;">Cliente
+                            </th>
+                            <th style="padding: 6px 5px; text-align: left; border: solid 1px #e8eef4; background-color: #999;">Doc. Ref.
+                            </th>
+                            <th style="padding: 6px 5px; text-align: left; border: solid 1px #e8eef4; background-color: #999;">Artículo
+                            </th>
+                            <th style="padding: 6px 5px; text-align: left; border: solid 1px #e8eef4; background-color: #999;">Cant.
+                            </th>
+                            <th style="padding: 6px 5px; text-align: left; border: solid 1px #e8eef4; background-color: #999;">Precio Uni.
+                            </th>
+                            <th style="padding: 6px 5px; text-align: left; border: solid 1px #e8eef4; background-color: #999;">IGV
+                            </th>
+                            <th style="padding: 6px 5px; text-align: left; border: solid 1px #e8eef4; background-color: #999;">ISC
+                            </th>
+                            <th style="padding: 6px 5px; text-align: left; border: solid 1px #e8eef4; background-color: #999;">Desc.
+                            </th>
+                            <th style="padding: 6px 5px; text-align: left; border: solid 1px #e8eef4; background-color: #999;">Importe Tot.
+                            </th>
+                            <th style="padding: 6px 5px; text-align: left; border: solid 1px #e8eef4; background-color: #999;">Fecha Doc.
+                            </th>
+                            <th style="padding: 6px 5px; text-align: left; border: solid 1px #e8eef4; background-color: #999;">Variante
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    </tbody>
+                </table>
+            </div>
+
+            <div id="DivtbProductosDelDiaExel" style="display: none;">
+                <table id="tbProductosDelDiaExel" class="table table-bordered TablaIndex table-striped dataTable no-footer"
+                    border="2px" cellspacing="0" width="2000">
+                    <thead>
+                        <tr>
+                            <th>Producto
+                            </th>
+                            <th>Importe total
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    </tbody>
+                </table>
+            </div>
+            <div id="DivtbVendedoresDelDiaExel" style="display: none;">
+                <table id="tbVendedoresDelDiaExel" class="table table-bordered TablaIndex table-striped dataTable no-footer"
+                    border="2px" cellspacing="0" width="2000">
+                    <thead>
+                        <tr>
+                            <th>Vendedor
+                            </th>
+                            <th>Importe total
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- PorProducto -->
+            <div id="PorProducto" class="tab-pane in active " style="padding: 13px;">
+                <div class="row">
+                    <div class="col-sm-10" style="padding-top: 10px;">
+                    </div>
+                    <div class="col-sm-2" style="padding-top: 10px;">
+                        <a href="#" title="Limpiar" onclick="EjecutarPorProducto();">
+                            <img src="../Styles/images/icon_check.png" style="background-color: #f0ad4e; width: 29px;" />
+                        </a><a href="#" title="Limpiar" onclick="LimpiarPorProducto();">
+                            <img src="../Styles/images/icon_limpiar.png" style="background-color: #21b5d6; width: 29px;" />
+                        </a><a href="#" title="Limpiar" onclick="ExelPorProducto();">
+                            <img src="../Styles/images/icon_exel_c.png" style="width: 29px; text-align: end;" />
+                        </a>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-sm-4" style="padding-top: 10px;">
+                        <label class="col-sm-3 moderno_lb">
+                            Tienda</label>
+                        <div class="col-sm-9">
+                            <select class="disabled limpiar form-control moderno_tb" id="txtTiendaPorProducto">
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-sm-4" style="padding-top: 10px;">
+                        <label class="col-sm-3 moderno_lb">
+                            Fecha Desde</label>
+                        <div class="col-sm-9">
+                            <input id="txtfchDesdePorProducto" maxlength="10" type="text" class="limpiar form-control moderno_tb"
+                                autocomplete="off" placeholder=" " runat="server" />
+                        </div>
+                    </div>
+                    <div class="col-sm-4" style="padding-top: 10px;">
+                        <label class="col-sm-3 moderno_lb">
+                            Fecha Hasta</label>
+                        <div class="col-sm-9">
+                            <input id="txtfchHastaPorProducto" maxlength="10" type="text" class="limpiar form-control moderno_tb"
+                                autocomplete="off" placeholder=" " runat="server" />
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-sm-4" style="padding-top: 10px;">
+                        <label class="col-sm-3 moderno_lb">
+                            Cliente</label>
+                        <div class="col-sm-7">
+                            <input id="txtClientePorProducto" maxlength="25" type="text" class="form-control moderno_tb" />
+                        </div>
+                        <a class="disabled input-group-addon" onclick="ModalConsultarClientes();"
+                            style="background-color: #ffffff; border: 0px"><i class="fa fa-search color-buscadores"
+                                aria-hidden="true"></i></a>
+                    </div>
+                    <div class="col-sm-4" style="padding-top: 10px;">
+                        <label class="col-sm-3 moderno_lb">
+                            Artículo</label>
+                        <div class="col-sm-7">
+                            <input id="txtArticuloPorProducto" maxlength="25" type="text" class="form-control moderno_tb" />
+                        </div>
+                        <a class="disabled input-group-addon" onclick="ModalConsultarArticulos();"
+                            style="background-color: #ffffff; border: 0px"><i class="fa fa-search color-buscadores"
+                                aria-hidden="true"></i></a>
+                    </div>
+                    <div class="col-sm-4" style="padding-top: 10px;">
+                        <label class="col-sm-3 moderno_lb">
+                            Detalle de Variante</label>
+                        <div class="col-sm-7">
+                            <input id="txtVariantePorProducto" maxlength="25" type="text" class="form-control moderno_tb" />
+                        </div>
+                    </div>
+                </div>
+
+                <ul class="nav nav-tabs" class="active">
+                    <li onclick="">
+                        <a data-toggle="tab" href="#Lista" class="tabcito" style="color: #228ac9; font-size: 17px;">Lista</a></li>
+                    <li onclick="">
+                        <a data-toggle="tab" href="#Estadisticas" class="tabcito" style="color: #228ac9; font-size: 17px;">Datos Adicionales</a></li>
+                </ul>
+                <div class="tab-content" style="padding-bottom: 30px;">
+                    <!-- LISTADO -->
+                    <div id="Lista" class="tab-pane in active " style="padding: 13px;">
+
+                        <!-- Tabla para Visible -->
+                        <table id="table_visibleDocPorProducto" class="display" style="width: 100%">
+                            <colgroup>
+                                <col style="width: 8%"></col>
+                                <col style="width: 10%"></col>
+                                <col style="width: 10%"></col>
+                                <col style="width: 5%"></col>
+                                <col style="width: 5%"></col>
+                                <col style="width: 5%"></col>
+                                <col style="width: 5%"></col>
+                                <col style="width: 5%"></col>
+                                <col style="width: 5%"></col>
+                                <col style="width: 10%"></col>
+                                <col style="width: 10%"></col>
+                            </colgroup>
+                            <thead id="thtable_visibleDocPorProducto">
+                                <tr>
+                                    <th style="padding: 6px 5px; text-align: left; border: solid 1px #e8eef4; background-color: #999;">Cliente
+                                    </th>
+                                    <th style="padding: 6px 5px; text-align: left; border: solid 1px #e8eef4; background-color: #999;">Doc. Ref.
+                                    </th>
+                                    <th style="padding: 6px 5px; text-align: left; border: solid 1px #e8eef4; background-color: #999;">Artículo
+                                    </th>
+                                    <th style="padding: 6px 5px; text-align: left; border: solid 1px #e8eef4; background-color: #999;">Cant.
+                                    </th>
+                                    <th style="padding: 6px 5px; text-align: left; border: solid 1px #e8eef4; background-color: #999;">Precio Uni.
+                                    </th>
+                                    <th style="padding: 6px 5px; text-align: left; border: solid 1px #e8eef4; background-color: #999;">IGV
+                                    </th>
+                                    <th style="padding: 6px 5px; text-align: left; border: solid 1px #e8eef4; background-color: #999;">ISC
+                                    </th>
+                                    <th style="padding: 6px 5px; text-align: left; border: solid 1px #e8eef4; background-color: #999;">Desc.
+                                    </th>
+                                    <th style="padding: 6px 5px; text-align: left; border: solid 1px #e8eef4; background-color: #999;">Importe Tot.
+                                    </th>
+                                    <th style="padding: 6px 5px; text-align: left; border: solid 1px #e8eef4; background-color: #999;">Fecha Doc.
+                                    </th>
+                                    <th style="padding: 6px 5px; text-align: left; border: solid 1px #e8eef4; background-color: #999;">Variante
+                                    </th>
+
+                                </tr>
+                            </thead>
+                            <tbody>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- Estadisticos -->
+                    <div id="Estadisticas" class="tab-pane tabcito" style="padding: 13px;">
+                        <div class="row">
+                            <div class="col-sm-4" style="padding-top: 10px;">
+                                <label class="col-sm-3 moderno_lb">
+                                    Cantidad total</label>
+                                <div class="col-sm-7">
+                                    <input id="txtCantTotPorProducto" disabled maxlength="25" type="text" class="form-control moderno_tb" />
+                                </div>
+                            </div>
+                            <div class="col-sm-4" style="padding-top: 10px;">
+                                <label class="col-sm-3 moderno_lb">
+                                    Importe Bruto total</label>
+                                <div class="col-sm-7">
+                                    <input id="txtImpBrutoTotPorProducto" disabled maxlength="25" type="text" class="form-control moderno_tb" />
+                                </div>
+                            </div>
+                            <div class="col-sm-4" style="padding-top: 10px;">
+                                <label class="col-sm-3 moderno_lb">
+                                    IGV total</label>
+                                <div class="col-sm-7">
+                                    <input id="txtIgvTotPorProducto" disabled maxlength="25" type="text" class="form-control moderno_tb" />
+                                </div>
+                            </div>
+
+                        </div>
+                        <div class="row">
+                            <div class="col-sm-4" style="padding-top: 10px;">
+                                <label class="col-sm-3 moderno_lb">
+                                    ISC total</label>
+                                <div class="col-sm-7">
+                                    <input id="txtIscTotPorProducto" disabled maxlength="25" type="text" class="form-control moderno_tb" />
+                                </div>
+                            </div>
+                            <div class="col-sm-4" style="padding-top: 10px;">
+                                <label class="col-sm-3 moderno_lb">
+                                    Descuento total</label>
+                                <div class="col-sm-7">
+                                    <input id="txtDescTotPorProducto" disabled maxlength="25" type="text" class="form-control moderno_tb" />
+                                </div>
+                            </div>
+                            <div class="col-sm-4" style="padding-top: 10px;">
+                                <label class="col-sm-3 moderno_lb">
+                                    Importe Neto total</label>
+                                <div class="col-sm-7">
+                                    <input id="txtImpNetoTotPorProducto" disabled maxlength="25" type="text" class="form-control moderno_tb" />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+            <!-- Kardex -->
+            <div id="Kardex" class="tab-pane in active " style="padding: 13px;">
+                <div class="row">
+                    <div class="col-sm-10" style="padding-top: 10px;">
+                    </div>
+                    <div class="col-sm-2" style="padding-top: 10px;">
+                        <a href="#" title="Limpiar" onclick="EjecutarKardex();">
+                            <img src="../Styles/images/icon_check.png" style="background-color: #f0ad4e; width: 29px;" />
+                        </a><a href="#" title="Limpiar" onclick="LimpiarKardex();">
+                            <img src="../Styles/images/icon_limpiar.png" style="background-color: #21b5d6; width: 29px;" />
+                        </a><a href="#" title="Limpiar" onclick="ExelKardex();">
+                            <img src="../Styles/images/icon_exel_c.png" style="width: 29px; text-align: end;" />
+                        </a>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-sm-4" style="padding-top: 10px;">
+                        <label class="col-sm-3 moderno_lb">
+                            Almacén*</label>
+                        <div class="col-sm-9">
+                            <select class="disabled limpiar form-control moderno_tb" id="txtAlmacenKardex">
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-sm-4" style="padding-top: 10px;">
+                        <label class="col-sm-3 moderno_lb">
+                            Fecha Desde*</label>
+                        <div class="col-sm-9">
+                            <input id="txtfchDesdeKardex" maxlength="10" type="text" class="limpiar form-control moderno_tb"
+                                autocomplete="off" placeholder=" " runat="server" />
+                        </div>
+                    </div>
+                    <div class="col-sm-4" style="padding-top: 10px;">
+                        <label class="col-sm-3 moderno_lb">
+                            Fecha Hasta*</label>
+                        <div class="col-sm-9">
+                            <input id="txtfchHastaKardex" maxlength="10" type="text" class="limpiar form-control moderno_tb"
+                                autocomplete="off" placeholder=" " runat="server" />
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-sm-4" style="padding-top: 10px;">
+
+                        <label class="col-sm-3 moderno_lb">
+                            Artículo</label>
+                        <div class="col-sm-7">
+                            <input id="txtCodArticuloKardex" maxlength="25" type="text" class="form-control moderno_tb" />
+                        </div>
+                        <a class="disabled input-group-addon" onclick="ModalConsultarArticulos();"
+                            style="background-color: #ffffff; border: 0px"><i class="fa fa-search color-buscadores"
+                                aria-hidden="true"></i></a>
+                    </div>
+                </div>
+
+                <table id="tableKardex" class="display" style="width: 100%">
+                    <colgroup>
+                        <col style="width: 10%"></col>
+                        <col style="width: 10%"></col>
+                        <col style="width: 15%"></col>
+                        <col style="width: 5%"></col>
+                        <col style="width: 5%"></col>
+                        <col style="width: 5%"></col>
+                        <col style="width: 5%"></col>
+                        <col style="width: 5%"></col>
+                        <col style="width: 5%"></col>
+                        <col style="width: 5%"></col>
+                        <col style="width: 5%"></col>
+                        <col style="width: 5%"></col>
+                    </colgroup>
+                    <thead id="thtableKardex">
+                        <tr>
+                            <th style="padding: 6px 5px; text-align: left; border: solid 1px #e8eef4; background-color: #999;"></th>
+                            <th style="padding: 6px 5px; text-align: left; border: solid 1px #e8eef4; background-color: #999;"></th>
+                            <th style="padding: 6px 5px; text-align: left; border: solid 1px #e8eef4; background-color: #999;"></th>
+                            <th style="padding: 6px 5px; text-align: left; border: solid 1px #e8eef4; background-color: #999;"></th>
+                            <th style="padding: 6px 5px; text-align: left; border: solid 1px #e8eef4; background-color: #999;">Ingreso</th>
+                            <th style="padding: 6px 5px; text-align: left; border: solid 1px #e8eef4; background-color: #999;"></th>
+                            <th style="padding: 6px 5px; text-align: left; border: solid 1px #e8eef4; background-color: #999;"></th>
+                            <th style="padding: 6px 5px; text-align: left; border: solid 1px #e8eef4; background-color: #999;">Salida</th>
+                            <th style="padding: 6px 5px; text-align: left; border: solid 1px #e8eef4; background-color: #999;"></th>
+                            <th style="padding: 6px 5px; text-align: left; border: solid 1px #e8eef4; background-color: #999;"></th>
+                            <th style="padding: 6px 5px; text-align: left; border: solid 1px #e8eef4; background-color: #999;">Saldo</th>
+                            <th style="padding: 6px 5px; text-align: left; border: solid 1px #e8eef4; background-color: #999;"></th>
+                        </tr>
+                        <tr>
+                            <th style="padding: 6px 5px; text-align: left; border: solid 1px #e8eef4; background-color: #999;">Doc. Referencia</th>
+                            <th style="padding: 6px 5px; text-align: left; border: solid 1px #e8eef4; background-color: #999;">Fecha Doc.</th>
+                            <th style="padding: 6px 5px; text-align: left; border: solid 1px #e8eef4; background-color: #999;">Nombre de Artículo</th>
+                            <th style="padding: 6px 5px; text-align: left; border: solid 1px #e8eef4; background-color: #999;">Cantidad</th>
+                            <th style="padding: 6px 5px; text-align: left; border: solid 1px #e8eef4; background-color: #999;">Costo</th>
+                            <th style="padding: 6px 5px; text-align: left; border: solid 1px #e8eef4; background-color: #999;">Total</th>
+                            <th style="padding: 6px 5px; text-align: left; border: solid 1px #e8eef4; background-color: #999;">Cantidad</th>
+                            <th style="padding: 6px 5px; text-align: left; border: solid 1px #e8eef4; background-color: #999;">Costo</th>
+                            <th style="padding: 6px 5px; text-align: left; border: solid 1px #e8eef4; background-color: #999;">Total</th>
+                            <th style="padding: 6px 5px; text-align: left; border: solid 1px #e8eef4; background-color: #999;">Cantidad</th>
+                            <th style="padding: 6px 5px; text-align: left; border: solid 1px #e8eef4; background-color: #999;">Costo</th>
+                            <th style="padding: 6px 5px; text-align: left; border: solid 1px #e8eef4; background-color: #999;">Total</th>
+                        </tr>
+                    </thead>
+
+                    <tbody ondblclick="table_two_click(this);">
+                    </tbody>
+                </table>
+            </div>
+            <!-- Clientes -->
+            <div id="Clientes" class="tab-pane in active " style="padding: 13px;">
+                <div class="row">
+                    <div class="col-sm-10" style="padding-top: 10px;">
+                    </div>
+                    <div class="col-sm-2" style="padding-top: 10px;">
+                        <a href="#" title="Limpiar" onclick="EjecutarClientes();">
+                            <img src="../Styles/images/icon_check.png" style="background-color: #f0ad4e; width: 29px;" />
+                        </a><a href="#" title="Limpiar" onclick="LimpiarClientes();">
+                            <img src="../Styles/images/icon_limpiar.png" style="background-color: #21b5d6; width: 29px;" />
+                        </a><a href="#" title="Limpiar" onclick="ExelClientes();">
+                            <img src="../Styles/images/icon_exel_c.png" style="width: 29px; text-align: end;" />
+                        </a>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-sm-4" style="padding-top: 10px;">
+                        <label class="col-sm-3 moderno_lb">
+                            Tienda</label>
+                        <div class="col-sm-9">
+                            <select class="disabled limpiar form-control moderno_tb" id="txtTiendaClientes">
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-sm-4" style="padding-top: 10px;">
+                        <label class="col-sm-3 moderno_lb">
+                            Fecha Desde</label>
+                        <div class="col-sm-9">
+                            <input id="txtfchDesdeClientes" maxlength="10" type="text" class="limpiar form-control moderno_tb"
+                                autocomplete="off" placeholder=" " runat="server" />
+                        </div>
+                    </div>
+                    <div class="col-sm-4" style="padding-top: 10px;">
+                        <label class="col-sm-3 moderno_lb">
+                            Fecha Hasta</label>
+                        <div class="col-sm-9">
+                            <input id="txtfchHastaClientes" maxlength="10" type="text" class="limpiar form-control moderno_tb"
+                                autocomplete="off" placeholder=" " runat="server" />
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-sm-4" style="padding-top: 10px;">
+                        <label class="col-sm-3 moderno_lb">
+                            Cliente</label>
+                        <div class="col-sm-7">
+                            <input id="txtClienteClientes" maxlength="25" type="text" class="form-control moderno_tb" />
+                        </div>
+                        <a class="disabled input-group-addon" onclick="ModalConsultarClientes();"
+                            style="background-color: #ffffff; border: 0px"><i class="fa fa-search color-buscadores"
+                                aria-hidden="true"></i></a>
+                    </div>
+                    <div class="col-sm-4" style="padding-top: 10px;">
+                        <label class="col-sm-3 moderno_lb">
+                            Usuario</label>
+                        <div class="col-sm-7">
+                            <input id="txtUsuarioClientes" maxlength="25" type="text" class="form-control moderno_tb" />
+                        </div>
+                        <a class="disabled input-group-addon" onclick="ModalConsultarUsuarios();"
+                            style="background-color: #ffffff; border: 0px"><i class="fa fa-search color-buscadores"
+                                aria-hidden="true"></i></a>
+                    </div>
+                </div>
+
+                <table id="tableCliente" class="display" style="width: 100%">
+                    <colgroup>
+                        <col style="width: 17%"></col>
+                        <col style="width: 17%"></col>
+                        <col style="width: 10%"></col>
+                        <col style="width: 6%"></col>
+                        <col style="width: 5%"></col>
+                        <col style="width: 5%"></col>
+                    </colgroup>
+                    <thead id="">
+                        <tr>
+                            <th style="padding: 6px 5px; text-align: left; border: solid 1px #e8eef4; background-color: #999;">Cliente</th>
+                            <th style="padding: 6px 5px; text-align: left; border: solid 1px #e8eef4; background-color: #999;">Usuario</th>
+                            <th style="padding: 6px 5px; text-align: left; border: solid 1px #e8eef4; background-color: #999;">Doc. Ref</th>
+                            <th style="padding: 6px 5px; text-align: left; border: solid 1px #e8eef4; background-color: #999;">Forma de Pago</th>
+                            <th style="padding: 6px 5px; text-align: left; border: solid 1px #e8eef4; background-color: #999;">Fecha Doc.</th>
+                            <th style="padding: 6px 5px; text-align: left; border: solid 1px #e8eef4; background-color: #999;">Monto</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+
+
+
+        <div class="modal fade" id="modalConsultarClientes" tabindex="-1" role="dialog" aria-labelledby="testModalLabel"
+            aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content" style="background-color: #d4e1e4;">
+                    <div id="modalConsultarClientes2" class="modal-header">
+                        <div class="col-sm-6">
+                            <h5 class="modal-title">Seleccione Cliente</h5>
+                        </div>
+                        <div class="col-sm-6">
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="modal-body" style="margin: 10px;">
+                        <table id="tableVisibleConsulClientes" class="display" style="width: 100%;">
+                            <colgroup>
+                                <col style="width: 10%"></col>
+                                <col style="width: 30%"></col>
+                                <col style="width: 60%"></col>
+                            </colgroup>
+                            <thead id="thTablaConsultarCliente">
+                                <tr>
+                                    <th class="text-center" style="padding: 6px 5px; text-align: left; border: solid 1px #e8eef4; background-color: rgb(33, 182, 215); color: White;"></th>
+                                    <th style="padding: 6px 5px; text-align: left; border: solid 1px #e8eef4; background-color: rgb(33, 182, 215); color: White;">Cliente
+                                    </th>
+                                    <th style="padding: 6px 5px; text-align: left; border: solid 1px #e8eef4; background-color: rgb(33, 182, 215); color: White;">Nombre del Cliente
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="modal-footer" style="margin: 10px;">
+                        <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="PasaDatosCodCliente();">
+                            Seleccionar</button>
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">
+                            Cerrar</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div id="DivOpcionCliente" style="display: none;" class="row">
+            <div class="col-lg-3 col-md-6 col-sm-6">
+                <div class="card card-stats">
+                    <div class="card-header card-header-warning card-header-icon">
+                        <div class="card-icon" style="background: #4BBCF4;">
+                            <i class="material-icons">point_of_sale</i>
+                        </div>
+                        <p class="card-category">Importe en Caja</p>
+                        <h3 id="txtImporteCaja" class="card-title">0</h3>
+                    </div>
+                    <div class="card-footer">
+                        <div class="stats">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-3 col-md-6 col-sm-6">
+                <div class="card card-stats">
+                    <div class="card-header card-header-warning card-header-icon">
+                        <div class="card-icon" style="background: #61C0BF;">
+                            <i class="material-icons">money</i>
+                        </div>
+                        <p class="card-category">Total de ventas del turno</p>
+                        <h3 id="txtTotVentTurn" class="card-title">0</h3>
+                    </div>
+                    <div class="card-footer">
+                        <div class="stats">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-3 col-md-6 col-sm-6">
+                <div class="card card-stats">
+                    <div class="card-header card-header-success card-header-icon">
+                        <div class="card-icon">
+                            <i class="material-icons">money</i>
+                        </div>
+                        <p class="card-category">Total de descuento del turno</p>
+                        <h3 id="txtTotDescTurn" class="card-title">0</h3>
+                    </div>
+                    <div class="card-footer">
+                        <div class="stats">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-3 col-md-6 col-sm-6">
+                <div class="card card-stats">
+                    <div class="card-header card-header-warning card-header-icon">
+                        <div class="card-icon">
+                            <i class="material-icons">delete_forever</i>
+                        </div>
+                        <p class="card-category">Documentos anulados</p>
+                        <h3 id="txtDocAnulado" class="card-title">0</h3>
+                    </div>
+                    <div class="card-footer">
+                        <div class="stats">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+        <div id="DivDashboardCliente" class="row" style="display: none;">
+            <div class="col-sm-6">
+                <div id="containerPastel" style="padding-top: 30px;">
+                </div>
+            </div>
+            <div class="col-sm-6">
+                <h4 style="font-size: 16PX; font-weight: bold; margin-bottom: 30px; margin-top: 30px; text-align: center;">Productos con descuento</h4>
+                <table id="tbProducDescuent">
+                    <colgroup>
+                        <col style="width: 10%"></col>
+                        <col style="width: 5%"></col>
+                    </colgroup>
+                    <thead>
+                        <tr>
+                            <th>Producto
+                            </th>
+                            <th>Descuento
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div class="modal" id="modalConsultarArticulos" tabindex="-1" role="dialog" aria-labelledby="modalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content" style="background-color: #d4e1e4;">
+                    <div class="modal-header">
+                        <div class="col-sm-6">
+                            <h5 class="modal-title">Seleccione Artículo</h5>
+                        </div>
+                        <div class="col-sm-6">
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                    </div>
+
+
+                    <div class="modal-body" style="margin: 10px;">
+                        <table id="table_visible_ConsultarArticulos" class="display" style="width: 100%;">
+                            <colgroup>
+                                <col style="width: 10%"></col>
+                                <col style="width: 30%"></col>
+                                <col style="width: 60%"></col>
+                            </colgroup>
+                            <thead id="thTablaConsultarArticulos">
+                                <tr>
+                                    <th class="text-center" style="padding: 6px 5px; text-align: left; border: solid 1px #e8eef4; background-color: rgb(33, 182, 215); color: White;"></th>
+                                    <th style="padding: 6px 5px; text-align: left; border: solid 1px #e8eef4; background-color: rgb(33, 182, 215); color: White;">Artículo
+                                    </th>
+                                    <th style="padding: 6px 5px; text-align: left; border: solid 1px #e8eef4; background-color: rgb(33, 182, 215); color: White;">Nombre de Artículo
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                            </tbody>
+                        </table>
+
+                    </div>
+                    <div class="modal-footer" style="margin: 10px;">
+                        <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="PasaDatosCodArticulo();">Seleccionar</button>
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <%-- <table id="datatable" style="display:none;">
+        <thead>
+            <tr>
+                <th></th>
+                <th>Efectivo</th>
+                <th>Tarjeta</th>
+            </tr>
+        </thead>
+        <tbody> 
+        </tbody>
