@@ -14,6 +14,143 @@ require_once __DIR__ . '/../../BL/BLUsuario.php';
 require_once __DIR__ . '/../../includes/helpers.php';
 require_once __DIR__ . '/../../includes/password_helper.php';
 
+/**
+ * Autentica un usuario directamente contra la BD Tenant (DatPos_EMP01).
+ *
+ * Se usa como SEGUNDO ORIGEN de login: cuando el username no existe en
+ * DatPosAdmin, se asume que es un empleado con rol creado por un admin
+ * (almacenado solo en el tenant). Estos usuarios tienen acceso filtrado por
+ * su rol (Cajero -> Ventas, Almacenero -> Almacen, etc.).
+ *
+ * @param  BLUsuario $blUsuario
+ * @param  string    $username
+ * @param  string    $password
+ * @param  string    $error      (por referencia) mensaje de error a mostrar
+ * @return BEUsuario|null         BEUsuario listo para sesion, o null si falla
+ */
+function autenticarUsuarioTenant($blUsuario, $username, $password, &$error)
+{
+    // 1. Resolver la metadata/conexion del tenant.
+    //    Prioridad: variables de entorno DATPOS_TENANT_* (usadas por la clase
+    //    Database); fallback a la empresa registrada en DatPosAdmin.Empresas.
+    $probe = new BEUsuario();
+    $probe->cnomser    = getenv('DATPOS_TENANT_SERVER')   ?: '';
+    $probe->cnombre_bd = getenv('DATPOS_TENANT_DATABASE') ?: '';
+
+    $empresas = array();
+    try {
+        $empresas = $blUsuario->consultarEmpresas();
+    } catch (Exception $e) {
+        error_log('[LoginTenant] consultarEmpresas fallo: ' . $e->getMessage());
+    }
+    // Empresa por defecto (primera registrada) para completar conexion/metadata.
+    $empDefault = (count($empresas) > 0) ? $empresas[0] : null;
+    if ($empDefault !== null) {
+        if ($probe->cnomser === '')    $probe->cnomser    = strval($empDefault[4] ?? '');
+        if ($probe->cnombre_bd === '') $probe->cnombre_bd = strval($empDefault[5] ?? '');
+        $probe->ccod_empresa = strval($empDefault[0] ?? '');
+    }
+
+    if ($probe->cnomser === '' || $probe->cnombre_bd === '') {
+        error_log('[LoginTenant] No se pudo resolver servidor/BD del tenant.');
+        return null;
+    }
+
+    // 2. Buscar el usuario en el tenant (sin filtrar por contrasena).
+    //    Columnas de sp_buscarusuario_login (tenant):
+    //    [0]id_usuario [1]ccod_usuario [2]cdsc_usuario [3]id_rol [4]ccod_empresa
+    //    [5]cdsc_rol [6]estado [7]ccod_tiend [8]ccod_almacen [9]ccod_caja
+    //    [10]cperm_descn [11]cpassw(MD5) [12]cpassw_bcrypt [13]cdirec
+    $rows = array();
+    try {
+        $rows = $blUsuario->buscarUsuarioLoginTenant($username, $probe);
+    } catch (Exception $e) {
+        error_log('[LoginTenant] buscarUsuarioLoginTenant fallo: ' . $e->getMessage());
+        return null;
+    }
+    if (count($rows) === 0) {
+        return null; // no existe en el tenant tampoco
+    }
+    $f = $rows[0];
+
+    // 3. Validar estado.
+    if (isset($f[6]) && $f[6] !== 'Habilitado') {
+        $error = 'Usuario bloqueado. Contacte con su administrador.';
+        return null;
+    }
+
+    // 4. Verificar contrasena (bcrypt o MD5 legacy con migracion).
+    $md5Hash    = strval($f[11] ?? '');
+    $bcryptHash = strval($f[12] ?? '');
+    $check = PasswordHelper::verifyWithMigration($password, $md5Hash, $bcryptHash ?: null);
+    if (!$check['valid']) {
+        $error = 'Usuario o Contrasena incorrecta.';
+        return null;
+    }
+
+    $ccodEmpresa = strval($f[4] ?? $probe->ccod_empresa);
+
+    // 5. Migrar a bcrypt si la contrasena estaba en MD5.
+    if (!empty($check['needs_migration'])) {
+        try {
+            $blUsuario->migrarPasswordBcryptTenant(
+                $ccodEmpresa, strval($f[1]), PasswordHelper::hash($password), $probe
+            );
+        } catch (Exception $e) {
+            error_log('[LoginTenant] migracion bcrypt fallo: ' . $e->getMessage());
+        }
+    }
+
+    // 6. Construir el BEUsuario de sesion (empleado con rol).
+    $objBE = new BEUsuario();
+    $objBE->origenLogin    = 'tenant';
+    $objBE->esSuperUsuario = false;
+    $objBE->id_ctusu       = intval($f[0] ?? 0);
+    $objBE->ccod_usuario   = strval($f[1] ?? '');
+    $objBE->cdsc_usuario   = strval($f[2] ?? '');
+    $objBE->id_rol         = intval($f[3] ?? 0);
+    $objBE->rolMaster      = intval($f[3] ?? 0);
+    $objBE->ccod_empresa   = $ccodEmpresa;
+    $objBE->cdsc_rol       = strval($f[5] ?? '');
+    $objBE->estado         = 1;
+    $objBE->ccod_tiend     = strval($f[7] ?? '');
+    $objBE->ccod_almacen   = strval($f[8] ?? '');
+    $objBE->ccod_caja      = strval($f[9] ?? '');
+    $objBE->cperm_descn    = strval($f[10] ?? '');
+    $objBE->cdirec         = strval($f[13] ?? '');
+    $objBE->cnomser        = $probe->cnomser;
+    $objBE->cnombre_bd     = $probe->cnombre_bd;
+
+    // 7. Completar metadata de la empresa desde DatPosAdmin.Empresas.
+    foreach ($empresas as $emp) {
+        if (strval($emp[0] ?? '') === $ccodEmpresa) {
+            $objBE->cdescripcion = strval($emp[1] ?? '');
+            $objBE->cnum_tribu   = strval($emp[3] ?? '');
+            if (!empty($emp[4])) $objBE->cnomser    = strval($emp[4]);
+            if (!empty($emp[5])) $objBE->cnombre_bd = strval($emp[5]);
+            break;
+        }
+    }
+
+    // 8. Completar datos de tienda (mismo SP que el flujo admin).
+    try {
+        $listDT_U = $blUsuario->consultarUsuario($objBE->ccod_usuario, $objBE);
+        if (count($listDT_U) > 0) {
+            $fila_U = $listDT_U[0];
+            $objBE->cdirc_tienda         = strval($fila_U[12] ?? '');
+            $objBE->cprovincia_tienda    = strval($fila_U[13] ?? '');
+            $objBE->cdistrito_tienda     = strval($fila_U[14] ?? '');
+            $objBE->cdepartamento_tienda = strval($fila_U[15] ?? '');
+            $objBE->ctelf_tienda         = strval($fila_U[16] ?? '');
+            $objBE->cdsc_tienda          = strval($fila_U[17] ?? '');
+        }
+    } catch (Exception $e) {
+        error_log('[LoginTenant] consultarUsuario (tienda) fallo: ' . $e->getMessage());
+    }
+
+    return $objBE;
+}
+
 // Si ya esta logueado, ir al Home
 redirectIfAuthenticated();
 
@@ -65,6 +202,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     }
 
                     $objBE = new BEUsuario();
+
+                    // Origen DatPosAdmin => SUPERUSUARIO (acceso total, gestiona
+                    // incluso a los usuarios del tenant DatPos_EMP01).
+                    $objBE->origenLogin       = 'admin';
+                    $objBE->esSuperUsuario    = true;
 
                     // Lectura del Login (Admin)
                     $objBE->id_ctusu          = intval($fila[0]);
@@ -134,7 +276,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $error = 'Tu suscripcion ha expirado. Contacte con soporte para mayor informacion.';
             }
         } else {
-            $error = 'Usuario o Contrasena incorrecta.';
+            // ============================================================
+            // 2do ORIGEN DE LOGIN: usuarios del tenant DatPos_EMP01
+            // (empleados con rol creados por un admin). Solo se intenta si
+            // el usuario NO existe en DatPosAdmin.
+            // ============================================================
+            $objBE = autenticarUsuarioTenant($blUsuario, $username, $password, $error);
+            if ($objBE !== null) {
+                $_SESSION['objBEUsuario'] = $objBE;
+                emitirJwt($objBE);
+                header('Location: ' . basePath() . '/pages/Interfaces/Home.php');
+                exit;
+            }
+            if ($error === '') {
+                $error = 'Usuario o Contrasena incorrecta.';
+            }
         }
     }
 }

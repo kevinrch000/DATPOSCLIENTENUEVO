@@ -65,6 +65,12 @@ class BEUsuario {
 
     // Rol y facturación
     public $rolMaster         = 0;
+
+    // Origen de autenticación: 'admin' (DatPosAdmin) o 'tenant' (DatPos_EMP01)
+    public $origenLogin       = '';
+    // true cuando el usuario proviene de DatPosAdmin (superusuario, acceso total)
+    public $esSuperUsuario    = false;
+
     public $ctip_facturador   = '';
     public $dfch_vencimiento  = '';
     public $ccod_cliente_emis = '';

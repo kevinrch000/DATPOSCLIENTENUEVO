@@ -210,6 +210,46 @@ class DAUsuario
     }
 
     /**
+     * Buscar usuario por username para login en la BD Tenant (DatPos_EMP01).
+     * Usado cuando el usuario NO existe en DatPosAdmin: se trata de un empleado
+     * creado por un admin desde Administracion -> Usuarios.
+     * Retorna datos del usuario + hashes (cpassw, cpassw_bcrypt) + id_rol
+     * sin filtrar por contrasena (la verificacion se hace en PHP).
+     *
+     * @param string    $usuario   Codigo de usuario
+     * @param BEUsuario $objConex  Contexto con cnomser/cnombre_bd del tenant
+     */
+    public function buscarUsuarioLoginTenant($usuario, $objConex)
+    {
+        return Database::selectStoredTenant('sp_buscarusuario_login', array(
+            '@ccod_usuario' => $usuario
+        ), $objConex);
+    }
+
+    /**
+     * Listar empresas registradas en DatPosAdmin (sp_consultarempresas).
+     * Se usa para resolver la metadata de la empresa (moneda, RUC, BD, servidor)
+     * en el login directo de empleados del tenant.
+     * Columnas: [0]ccod_empresa [1]cdescripcion [2]cdoc [3]cnum_tribu [4]cnomser [5]cnombre_bd
+     */
+    public function consultarEmpresas()
+    {
+        return Database::selectStored('sp_consultarempresas', array());
+    }
+
+    /**
+     * Migrar password a bcrypt en BD Tenant (DatPos_EMP01).
+     */
+    public function migrarPasswordBcryptTenant($ccod_empresa, $ccod_usuario, $bcryptHash, $objConex)
+    {
+        return Database::executeStoredTenant('sp_migrar_password_bcrypt', array(
+            '@ccod_empresa'  => $ccod_empresa,
+            '@ccod_usuario'  => $ccod_usuario,
+            '@cpassw_bcrypt' => $bcryptHash
+        ), $objConex);
+    }
+
+    /**
      * Migrar password a bcrypt en BD Admin.
      * Actualiza cpassw_bcrypt con el nuevo hash y reemplaza cpassw con MD5
      * (para eliminar texto plano de la BD).

@@ -66,6 +66,24 @@ class BLUsuario {
     }
 
     /**
+     * Buscar usuario por username para login en la BD Tenant (DatPos_EMP01).
+     * Se usa como segundo origen de login (empleados creados por un admin).
+     */
+    public function buscarUsuarioLoginTenant($usuario, $objConex) {
+        return $this->objDA->buscarUsuarioLoginTenant($usuario, $objConex);
+    }
+
+    /** Lista de empresas (DatPosAdmin) para resolver metadata del tenant. */
+    public function consultarEmpresas() {
+        return $this->objDA->consultarEmpresas();
+    }
+
+    /** Migrar password a bcrypt en la BD Tenant. */
+    public function migrarPasswordBcryptTenant($ccod_empresa, $ccod_usuario, $bcryptHash, $objConex) {
+        return $this->objDA->migrarPasswordBcryptTenant($ccod_empresa, $ccod_usuario, $bcryptHash, $objConex);
+    }
+
+    /**
      * Migrar password a bcrypt en BD Admin.
      * Tambien reemplaza cpassw con MD5 para eliminar texto plano.
      */

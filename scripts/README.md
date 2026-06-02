@@ -165,7 +165,6 @@ SELECT DB_NAME() AS base, COUNT(*) AS total_fks FROM sys.foreign_keys;
 
 ### Migrado base, falta smoke test
 - **Ventas → Apertura/Cierre Caja**
-- **Ventas → POS / FacturaListaPrecio**
 - **Ventas → Facturación** (estándar)
 - **Ventas → Nota Crédito / Débito / Anulación**
 - **Ventas → Precios** (lista de precios CRUD)

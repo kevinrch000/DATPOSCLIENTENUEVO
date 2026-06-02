@@ -57,18 +57,28 @@ switch ($method) {
         error_log("ROL: [" . $objUsuario->id_rol . "]");
         error_log("===============================");
 
-        // 2. Ejecutar la consulta (Le ponemos un "parche salvavidas" al rol por si viene vacío)
-        $idRolFiltro = !empty($objUsuario->id_rol) ? $objUsuario->id_rol : 1; 
-
-        $rows = Database::selectStoredTenant(
-            'webDatpos_cargarRol',
-            array(
-                '@ccod_cia'     => $objUsuario->ccod_empresa,
-                '@ccod_usuario' => $objUsuario->ccod_usuario,
-                '@id_rol'       => $idRolFiltro
-            ),
-            $objUsuario
-        );
+        // 2. Cargar menús según el origen del usuario:
+        //    - Superusuario (DatPosAdmin): ve TODOS los menús (sin filtrar por rol).
+        //    - Empleado (DatPos_EMP01): ve solo los menús de su rol (vía Accesos).
+        if (!empty($objUsuario->esSuperUsuario)) {
+            $rows = Database::selectStoredTenant(
+                'webDatpos_cargarRolAdmin',
+                array('@ccod_cia' => $objUsuario->ccod_empresa),
+                $objUsuario
+            );
+        } else {
+            // "Parche salvavidas" al rol por si viene vacío
+            $idRolFiltro = !empty($objUsuario->id_rol) ? $objUsuario->id_rol : 1;
+            $rows = Database::selectStoredTenant(
+                'webDatpos_cargarRol',
+                array(
+                    '@ccod_cia'     => $objUsuario->ccod_empresa,
+                    '@ccod_usuario' => $objUsuario->ccod_usuario,
+                    '@id_rol'       => $idRolFiltro
+                ),
+                $objUsuario
+            );
+        }
 
         $menus = array();
         foreach ($rows as $fila) {
@@ -455,6 +465,10 @@ switch ($method) {
         jsonResponse(array('d' => $lst)); break;
 
     case 'VerificarAccesos':
+        // Superusuario (DatPosAdmin): acceso total, no se filtra por rol.
+        if (!empty($objUsuario->esSuperUsuario)) {
+            jsonResponse(array('d' => array(array('cpermiso' => '1'))));
+        }
         $rows = Database::selectStoredTenant('webDatpos_verificarAccesos', array(
             '@ccod_cia' => $objUsuario->ccod_empresa,
             '@id_rol' => $objUsuario->id_rol ?? 0,
