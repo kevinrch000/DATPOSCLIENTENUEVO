@@ -227,14 +227,17 @@ class DAUsuario
     }
 
     /**
-     * Listar empresas registradas en DatPosAdmin (sp_consultarempresas).
-     * Se usa para resolver la metadata de la empresa (moneda, RUC, BD, servidor)
-     * en el login directo de empleados del tenant.
+     * Listar empresas registradas en DatPosAdmin para resolver la conexion
+     * del tenant en el login directo de empleados.
+     * Usa sp_consultar_empresas_login, que toma el servidor de la columna
+     * canonica Empresas.cnombre_servidor (igual que sp_buscarusuario_login),
+     * con fallback a cnomser. sp_consultarempresas leia cnomser, que suele
+     * estar vacia, y por eso fallaba la resolucion del servidor.
      * Columnas: [0]ccod_empresa [1]cdescripcion [2]cdoc [3]cnum_tribu [4]cnomser [5]cnombre_bd
      */
     public function consultarEmpresas()
     {
-        return Database::selectStored('sp_consultarempresas', array());
+        return Database::selectStored('sp_consultar_empresas_login', array());
     }
 
     /**

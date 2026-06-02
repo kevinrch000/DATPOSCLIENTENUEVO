@@ -57,8 +57,14 @@ if (!empty($rows)) {
         $md5Pass   = !empty($plainPass) ? md5($plainPass) : '';
         $bcryptPass = !empty($plainPass) ? PasswordHelper::hash($plainPass) : null;
 
+        $bl = new BLUsuario();
         if ($op === 'nuevo') {
-            Database::executeStoredTenant('sp_insertarusuarios', array(
+            // Evitar duplicados: el JS espera 'UsuRep' si el codigo ya existe.
+            $existe = $bl->consultarUsuarioDetalle($data['ccod_usuario'] ?? '', $o);
+            if (count($existe) > 0) {
+                jsonResponse(array('d' => 'UsuRep'));
+            }
+            $ok = Database::executeStoredTenant('sp_insertarusuarios', array(
                 '@ccod_empresa'     => $o->ccod_empresa,
                 '@ccod_usuario'     => $data['ccod_usuario'] ?? '',
                 '@cdsc_usuario'     => $data['cdsc_usuario'] ?? '',
@@ -75,7 +81,7 @@ if (!empty($rows)) {
                 '@cpassw_bcrypt'    => $bcryptPass,
             ), $o);
         } else {
-            Database::executeStoredTenant('webDatpos_editarUsuario', array(
+            $ok = Database::executeStoredTenant('webDatpos_editarUsuario', array(
                 '@ccod_cia'      => $o->ccod_empresa,
                 '@usu_crea'      => $o->ccod_usuario,
                 '@ccod_usuario'  => $data['ccod_usuario'] ?? '',
@@ -92,11 +98,13 @@ if (!empty($rows)) {
                 '@cpassw_bcrypt' => $bcryptPass,
             ), $o);
         }
-        jsonResponse(array('d' => array(array('ccod_usuario' => $data['ccod_usuario'] ?? '')))); break;
+        // El JS (Usuario.js :: Guardar) espera 'OK' / 'FALLIDO' / 'UsuRep'.
+        jsonResponse(array('d' => $ok ? 'OK' : 'FALLIDO')); break;
     case 'Eliminar':
         $input = getJsonInput();
-        Database::executeStoredTenant('webDatpos_eliminarUsuario', array('@ccod_usuario' => $input['usuario'] ?? ''), $o);
-        jsonResponse(array('d' => array(array('ccod_usuario' => $input['usuario'] ?? '')))); break;
+        // El JS (Usuario.js) espera response.d booleano (true/false).
+        $ok = Database::executeStoredTenant('webDatpos_eliminarUsuario', array('@ccod_usuario' => $input['usuario'] ?? ''), $o);
+        jsonResponse(array('d' => (bool)$ok)); break;
     default: jsonResponse(array('d' => array()));
 }
 ?>
