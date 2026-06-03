@@ -50,7 +50,11 @@ if (!empty($rows)) {
         jsonResponse(array('d' => $lst)); break;
     case 'Guardar':
         $input = getJsonInput(); $data = $input['usuario'][0] ?? array(); $op = $input['operacion'] ?? '';
-        $cs = strval($data['cstatus'] ?? $data['estado'] ?? '1');
+        $cs = strval($data['cstatus'] ?? $data['id_estado'] ?? $data['estado'] ?? '1');
+        // El JS (Usuario.js) envia el id del rol bajo la clave 'cdsc_rol'
+        // (el value del combo dl_rol ES el id_rol). Sin este fallback el rol
+        // se guardaba como 0 y el empleado terminaba con acceso total.
+        $rolId = intval($data['id_rol'] ?? $data['cdsc_rol'] ?? 0);
 
         // Hashear contrasena: guardar MD5 (compat legacy) + bcrypt (seguro)
         $plainPass = $data['cpassw'] ?? '';
@@ -72,7 +76,7 @@ if (!empty($rows)) {
                 '@cmail'            => $data['cmail'] ?? '',
                 '@ctelf'            => $data['ctelf'] ?? '',
                 '@ccelular'         => $data['ccelular'] ?? '',
-                '@id_rol'           => intval($data['id_rol'] ?? 0),
+                '@id_rol'           => $rolId,
                 '@ccod_tiend'       => $data['ccod_tiend'] ?? '',
                 '@ccod_almacen'     => $data['ccod_almacen'] ?? '',
                 '@ccod_caja'        => $data['ccod_caja'] ?? '',
@@ -88,7 +92,7 @@ if (!empty($rows)) {
                 '@cdirc_usuario' => $data['cdirec'] ?? $data['cdirc_usuario'] ?? '',
                 '@cdsc_usuario'  => $data['cdsc_usuario'] ?? '',
                 '@cpassw'        => $md5Pass,
-                '@rol'           => intval($data['id_rol'] ?? 0),
+                '@rol'           => $rolId,
                 '@cstatus'       => ($cs === '1' || $cs === 'A') ? 'A' : 'I',
                 '@cmail'         => $data['cmail'] ?? '',
                 '@ctelf'         => $data['ctelf'] ?? '',
