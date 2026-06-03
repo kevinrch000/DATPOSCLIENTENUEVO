@@ -195,31 +195,44 @@ switch ($method) {
             // Insertar accesos si el id_rol se obtuvo correctamente.
             // El JS envia cstatus como boolean JSON (true/false), no como string 'True'.
             // Toleramos boolean / 'true' / 'True' / '1' / 1.
+            //
+            // Se guarda un acceso por CADA casilla marcada (cabecera o detalle),
+            // sin filtrar por 'nivel'. Antes solo se guardaban los detalles
+            // (nivel='Si'), por lo que los menus principales (TABLAS, OPERACIONES)
+            // nunca quedaban en Accesos y sus ramas no se mostraban. El SP
+            // webDatpos_cargarRol completa los modulos/ancestros automaticamente.
+            $cordenesGuardados = array();
             if ($id_rol !== '') {
                 foreach ($menu as $m) {
                     $st = $m['cstatus'] ?? false;
                     $isChecked = ($st === true || $st === 1 || $st === '1'
                         || (is_string($st) && strtolower($st) === 'true'));
-                    if ($isChecked && ($m['nivel'] ?? '') === 'Si') {
+                    $corden = strval($m['corden'] ?? '');
+                    if ($isChecked && $corden !== '' && !isset($cordenesGuardados[$corden])) {
+                        $cordenesGuardados[$corden] = true;
                         $sqlAcc  = "EXEC webDatpos_insertarAcceso @ccod_empresa=?, @id_rol=?, @corden=?";
                         $stmtAcc = sqlsrv_query($conn, $sqlAcc, array(
                             $objUsuario->ccod_empresa,
                             $id_rol,
-                            $m['corden'] ?? ''
+                            $corden
                         ));
                         if ($stmtAcc) sqlsrv_free_stmt($stmtAcc);
                     }
                 }
+                // Compatibilidad: si algun cliente antiguo aun envia 'modulo',
+                // tambien se guardan (sin duplicar los ya insertados arriba).
                 foreach ($modulo as $mod) {
                     $st = $mod['cstatus'] ?? false;
                     $isChecked = ($st === true || $st === 1 || $st === '1'
                         || (is_string($st) && strtolower($st) === 'true'));
-                    if ($isChecked) {
+                    $corden = strval($mod['corden'] ?? '');
+                    if ($isChecked && $corden !== '' && !isset($cordenesGuardados[$corden])) {
+                        $cordenesGuardados[$corden] = true;
                         $sqlAcc2  = "EXEC webDatpos_insertarAcceso @ccod_empresa=?, @id_rol=?, @corden=?";
                         $stmtAcc2 = sqlsrv_query($conn, $sqlAcc2, array(
                             $objUsuario->ccod_empresa,
                             $id_rol,
-                            $mod['corden'] ?? ''
+                            $corden
                         ));
                         if ($stmtAcc2) sqlsrv_free_stmt($stmtAcc2);
                     }
