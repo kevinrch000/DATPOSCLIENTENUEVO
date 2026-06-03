@@ -49,7 +49,68 @@ ob_start();
         margin-left: 0px; 
         margin-bottom: 0px;
     }
-  
+
+    /* ---- Visualizacion del arbol de Accesos ---- */
+    #ColumnaRoles { padding: 4px 2px 16px; }
+
+    /* Modulo (ALMACEN, VENTAS, ...) */
+    #ColumnaRoles .acc-modulo {
+        border-bottom: 2px solid #d7dde3;
+        color: #2b3a4a;
+        font-weight: 700;
+        margin: 26px 0 10px;
+        padding-bottom: 6px;
+        width: 100%;
+    }
+    #ColumnaRoles .acc-modulo-body { padding-left: 6px; }
+
+    /* Cabecera / menu principal (TABLAS, OPERACIONES, ...) */
+    #ColumnaRoles .acc-cabecera {
+        align-items: center;
+        background: #f4f6f9;
+        border: 1px solid #e3e8ee;
+        border-left: 3px solid #6c8cae;
+        border-radius: 4px;
+        display: flex;
+        margin: 8px 0 2px;
+        padding: 7px 10px;
+    }
+    #ColumnaRoles .acc-cabecera-lb {
+        cursor: pointer;
+        font-weight: 600;
+        margin: 0 0 0 8px;
+    }
+
+    /* Detalle / hoja (paginas) */
+    #ColumnaRoles .acc-detalle {
+        align-items: center;
+        margin: 0 0 0 26px;
+        padding: 2px 0;
+    }
+    #ColumnaRoles .acc-detalle .input-group {
+        align-items: center;
+        display: flex;
+    }
+    #ColumnaRoles .acc-detalle-lb {
+        cursor: pointer;
+        font-weight: 400;
+        margin: 0 0 0 8px;
+    }
+    #ColumnaRoles .acc-detalle-body { padding-left: 4px; }
+
+    /* Fila marcada: realce visual */
+    #ColumnaRoles .input-group.acc-sel { background: #e7f3ff; border-left-color: #2f80ed; }
+    #ColumnaRoles .acc-detalle .input-group.acc-sel {
+        background: #eef6ff;
+        border-radius: 4px;
+    }
+
+    #ColumnaRoles input[type="checkbox"] { cursor: pointer; margin: 0; }
+
+    /* Controles "Marcar / Desmarcar todo" */
+    .acc-toolbar { margin: 6px 0 4px; }
+    .acc-toolbar .input-group { display: inline-flex; align-items: center; margin-right: 22px; }
+    .acc-toolbar label { cursor: pointer; margin: 0 0 0 8px; }
     </style>
 
     <div class="c-content-center modern-page">
@@ -103,15 +164,21 @@ ob_start();
             <div id="Accesos" class="tab-pane" style="padding: 13px;">
              
                 <label id="lb_codigo"></label>
-                
-                 
-                <div class="input-group">
-                        <input  class="limpiar_checked disabled" onclick="CkMarcarTodo()" style="margin-top:10px;cursor: default;" type="checkbox" id="idCkMarcarTodo" disabled>
-                    <label style="padding-left:10px;" id="">Marcar todo</label>
-                </div>
-                <div class="input-group">
-                        <input  class="disabled" onclick="CkDesmarcarTodo()" style="margin-top:10px;cursor: default;" type="checkbox" id="idCkDesmarcarTodo" disabled>
-                    <label style="padding-left:10px;" id="">Desmarcar todo</label>
+
+                <p style="color:#6b7785;margin:4px 0 2px;">
+                    Marca un menú principal para conceder toda su rama, o elige
+                    páginas concretas (el menú padre se marca solo).
+                </p>
+
+                <div class="acc-toolbar">
+                    <div class="input-group">
+                            <input class="disabled" onclick="CkMarcarTodo()" type="checkbox" id="idCkMarcarTodo" disabled>
+                        <label for="idCkMarcarTodo">Marcar todo</label>
+                    </div>
+                    <div class="input-group">
+                            <input class="disabled" onclick="CkDesmarcarTodo()" type="checkbox" id="idCkDesmarcarTodo" disabled>
+                        <label for="idCkDesmarcarTodo">Desmarcar todo</label>
+                    </div>
                 </div>
 
               <div id="ColumnaRoles" >

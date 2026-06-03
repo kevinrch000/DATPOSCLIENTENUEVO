@@ -42,29 +42,62 @@ function CargarDatosColumna() {
 }
 
 function CkMarcarTodo() {
-    if ($('#idCkMarcarTodo').is(':checked') == true) {
-        $('.limpiar_checked').prop('checked', true);
-        var objIdMenuPadre = llenarobjeto('Roles.aspx/ObtenerIdPadre');
-        for (var i = 0; i < objIdMenuPadre.length; i++) {
-            $('.' + objIdMenuPadre[i].nid_menupadre).prop('checked', true);
-        }
-        $("#idCkDesmarcarTodo").prop("checked", false);
-    } else {
-
-    }
+    var marcar = $('#idCkMarcarTodo').is(':checked');
+    $('#ColumnaRoles input[type="checkbox"]').prop('checked', marcar).each(function () {
+        _pintarFilaAcceso($(this));
+    });
+    if (marcar) $("#idCkDesmarcarTodo").prop("checked", false);
 }
 
 function CkDesmarcarTodo() {
-    if ($('#idCkDesmarcarTodo').is(':checked') == true) {
-        $(".limpiar_checked").removeAttr("checked");
-        var objIdMenuPadre = llenarobjeto('Roles.aspx/ObtenerIdPadre');
-        for (var i = 0; i < objIdMenuPadre.length; i++) {
-            $("." + objIdMenuPadre[i].nid_menupadre).removeAttr("checked");
-        }
-
-    } else {
-
+    var desmarcar = $('#idCkDesmarcarTodo').is(':checked');
+    if (desmarcar) {
+        $('#ColumnaRoles input[type="checkbox"]').prop('checked', false).each(function () {
+            _pintarFilaAcceso($(this));
+        });
+        $("#idCkMarcarTodo").prop("checked", false);
     }
+}
+
+// ----------------------------------------------------------------------
+// Arbol de Accesos (generico). Antes el comportamiento estaba cableado a
+// ids/clases fijos (101..108 -> limpiarChecked2/8/12...), por lo que los
+// menus principales (TABLAS, OPERACIONES, ...) no propagaban ni se
+// guardaban si el catalogo no coincidia con esos numeros. Ahora la
+// relacion padre/hijo se resuelve por el DOM usando data-idmenu (id_menu
+// propio) y name (id_menu del padre).
+// ----------------------------------------------------------------------
+function _pintarFilaAcceso($chk) {
+    $chk.closest('.input-group').toggleClass('acc-sel', $chk.is(':checked'));
+}
+
+function marcarAncestrosAcceso($chk) {
+    var padreId = $chk.attr('name');
+    var guarda = 0;
+    while (padreId && guarda++ < 50) {
+        var $padre = $('#ColumnaRoles input[type="checkbox"][data-idmenu="' + padreId + '"]');
+        if (!$padre.length) break;
+        $padre.prop('checked', true);
+        _pintarFilaAcceso($padre);
+        padreId = $padre.attr('name');
+    }
+}
+
+function _bindArbolAccesos() {
+    $('#ColumnaRoles').off('change.acc').on('change.acc', 'input[type="checkbox"]', function () {
+        var checked = this.checked;
+        var idmenu = $(this).attr('data-idmenu');
+        if (idmenu) {
+            // Cascada hacia los hijos: marca/desmarca todo el contenedor.
+            $('#' + idmenu).find('input[type="checkbox"]').prop('checked', checked).each(function () {
+                _pintarFilaAcceso($(this));
+            });
+        }
+        // Al marcar un hijo se marcan sus padres para mantener la rama completa.
+        if (checked) marcarAncestrosAcceso($(this));
+        _pintarFilaAcceso($(this));
+    });
+    $('#ColumnaRoles input[type="checkbox"]').each(function () { _pintarFilaAcceso($(this)); });
 }
 
 function Guardar() {
@@ -79,399 +112,28 @@ function Guardar() {
             return;
         }
 
-        var obj_menu = [
-            {
-                "corden": "101",
-                "cstatus": $('#101').is(':checked'),
-                "nid_menupadre": $('#101').attr("name"),
-                "nivel": "No"
-            },
-            {
-                "corden": "102",
-                "cstatus": $('#102').is(':checked'),
-                "nid_menupadre": $('#102').attr("name"),
-                "nivel": "No"
-            },
-            {
-                "corden": "103",
-                "cstatus": $('#103').is(':checked'),
-                "nid_menupadre": $('#103').attr("name"),
-                "nivel": "No"
-            },
-            {
-                "corden": "104",
-                "cstatus": $('#104').is(':checked'),
-                "nid_menupadre": $('#104').attr("name"),
-                "nivel": "No"
-            },
-            {
-                "corden": "105",
-                "cstatus": $('#105').is(':checked'),
-                "nid_menupadre": $('#105').attr("name"),
-                "nivel": "No"
-            },
-            {
-                "corden": "106",
-                "cstatus": $('#106').is(':checked'),
-                "nid_menupadre": $('#106').attr("name"),
-                "nivel": "No"
-            },
-            {
-                "corden": "107",
-                "cstatus": $('#107').is(':checked'),
-                "nid_menupadre": $('#107').attr("name"),
-                "nivel": "No"
-            },
-            {
-                "corden": "108",
-                "cstatus": $('#108').is(':checked'),
-                "nid_menupadre": $('#108').attr("name"),
-                "nivel": "No"
-            },
+        // Recolecta el estado de TODAS las casillas del arbol de accesos
+        // de forma generica, sin depender de cordenes/ids fijos. El value de
+        // cada checkbox es su corden y su name es el id_menu del padre. De esta
+        // forma funciona con cualquier catalogo de menus (no esta cableado a
+        // 101..113 / 1001.. como antes, que era la causa de que los menus
+        // principales como TABLAS u OPERACIONES no se guardaran).
+        var obj_menu = [];
+        $('#ColumnaRoles input[type="checkbox"]').each(function () {
+            var corden = $(this).val();
+            if (corden === undefined || corden === '') return;
+            obj_menu.push({
+                "corden": String(corden),
+                "cstatus": $(this).is(':checked'),
+                "nid_menupadre": $(this).attr("name") || '',
+                "nivel": String($(this).attr('data-nivel') || '')
+            });
+        });
 
-            {
-                "corden": "109",
-                "cstatus": $('#109').is(':checked'),
-                "nid_menupadre": $('#109').attr("name"),
-                "nivel": "Si"
-            },
-            {
-                "corden": "110",
-                "cstatus": $('#110').is(':checked'),
-                "nid_menupadre": $('#110').attr("name"),
-                "nivel": "Si"
-            },
-            {
-                "corden": "111",
-                "cstatus": $('#111').is(':checked'),
-                "nid_menupadre": $('#111').attr("name"),
-                "nivel": "Si"
-            },
-            {
-                "corden": "112",
-                "cstatus": $('#112').is(':checked'),
-                "nid_menupadre": $('#112').attr("name"),
-                "nivel": "Si"
-            },
-            {
-                "corden": "113",
-                "cstatus": $('#113').is(':checked'),
-                "nid_menupadre": $('#113').attr("name"),
-                "nivel": "Si"
-            },
-            {
-                "corden": "1001",
-                "cstatus": $('#1001').is(':checked'),
-                "nid_menupadre": $('#1001').attr("name"),
-                "nivel": "Si"
-            },
-            {
-                "corden": "1002",
-                "cstatus": $('#1002').is(':checked'),
-                "nid_menupadre": $('#1002').attr("name"),
-                "nivel": "Si"
-            },
-            {
-                "corden": "1003",
-                "cstatus": $('#1003').is(':checked'),
-                "nid_menupadre": $('#1003').attr("name"),
-                "nivel": "Si"
-            },
-            {
-                "corden": "1004",
-                "cstatus": $('#1004').is(':checked'),
-                "nid_menupadre": $('#1004').attr("name"),
-                "nivel": "Si"
-            },
-            {
-                "corden": "1005",
-                "cstatus": $('#1005').is(':checked'),
-                "nid_menupadre": $('#1005').attr("name"),
-                "nivel": "Si"
-            },
-            {
-                "corden": "1006",
-                "cstatus": $('#1006').is(':checked'),
-                "nid_menupadre": $('#1006').attr("name"),
-                "nivel": "Si"
-            },
-            {
-                "corden": "1007",
-                "cstatus": $('#1007').is(':checked'),
-                "nid_menupadre": $('#1007').attr("name"),
-                "nivel": "Si"
-            },
-            {
-                "corden": "1008",
-                "cstatus": $('#1008').is(':checked'),
-                "nid_menupadre": $('#1008').attr("name"),
-                "nivel": "Si"
-            },
-            {
-                "corden": "1009",
-                "cstatus": $('#1009').is(':checked'),
-                "nid_menupadre": $('#1009').attr("name"),
-                "nivel": "Si"
-            },
-            {
-                "corden": "1010",
-                "cstatus": $('#1010').is(':checked'),
-                "nid_menupadre": $('#1010').attr("name"),
-                "nivel": "Si"
-            },
-            {
-                "corden": "1011",
-                "cstatus": $('#1011').is(':checked'),
-                "nid_menupadre": $('#1011').attr("name"),
-                "nivel": "Si"
-            },
-            {
-                "corden": "1012",
-                "cstatus": $('#1012').is(':checked'),
-                "nid_menupadre": $('#1012').attr("name"),
-                "nivel": "Si"
-            },
-            {
-                "corden": "1013",
-                "cstatus": $('#1013').is(':checked'),
-                "nid_menupadre": $('#1013').attr("name"),
-                "nivel": "Si"
-            },
-            {
-                "corden": "1014",
-                "cstatus": $('#1014').is(':checked'),
-                "nid_menupadre": $('#1014').attr("name"),
-                "nivel": "Si"
-            },
-            {
-                "corden": "1015",
-                "cstatus": $('#1015').is(':checked'),
-                "nid_menupadre": $('#1015').attr("name"),
-                "nivel": "Si"
-            },
-            {
-                "corden": "1016",
-                "cstatus": $('#1016').is(':checked'),
-                "nid_menupadre": $('#1016').attr("name"),
-                "nivel": "Si"
-            },
-            {
-                "corden": "1017",
-                "cstatus": $('#1017').is(':checked'),
-                "nid_menupadre": $('#1017').attr("name"),
-                "nivel": "Si"
-            },
-            {
-                "corden": "1018",
-                "cstatus": $('#1018').is(':checked'),
-                "nid_menupadre": $('#1018').attr("name"),
-                "nivel": "Si"
-            },
-            {
-                "corden": "1019",
-                "cstatus": $('#1019').is(':checked'),
-                "nid_menupadre": $('#1019').attr("name"),
-                "nivel": "Si"
-            },
-            {
-                "corden": "1020",
-                "cstatus": $('#1020').is(':checked'),
-                "nid_menupadre": $('#1020').attr("name"),
-                "nivel": "Si"
-            },
-            {
-                "corden": "1021",
-                "cstatus": $('#1021').is(':checked'),
-                "nid_menupadre": $('#1021').attr("name"),
-                "nivel": "Si"
-            },
-            {
-                "corden": "1022",
-                "cstatus": $('#1022').is(':checked'),
-                "nid_menupadre": $('#1022').attr("name"),
-                "nivel": "Si"
-            },
-            {
-                "corden": "1023",
-                "cstatus": $('#1023').is(':checked'),
-                "nid_menupadre": $('#1023').attr("name"),
-                "nivel": "Si"
-            },
-            {
-                "corden": "1024",
-                "cstatus": $('#1024').is(':checked'),
-                "nid_menupadre": $('#1024').attr("name"),
-                "nivel": "Si"
-            },
-
-            {
-                "corden": "1026",
-                "cstatus": $('#1026').is(':checked'),
-                "nid_menupadre": $('#1026').attr("name"),
-                "nivel": "Si"
-            },
-            {
-                "corden": "1027",
-                "cstatus": $('#1027').is(':checked'),
-                "nid_menupadre": $('#1027').attr("name"),
-                "nivel": "Si"
-            },
-            {
-                "corden": "1028",
-                "cstatus": $('#1028').is(':checked'),
-                "nid_menupadre": $('#1028').attr("name"),
-                "nivel": "Si"
-            },
-            {
-                "corden": "1029",
-                "cstatus": $('#1029').is(':checked'),
-                "nid_menupadre": $('#1029').attr("name"),
-                "nivel": "Si"
-            },
-            {
-                "corden": "1030",
-                "cstatus": $('#1030').is(':checked'),
-                "nid_menupadre": $('#1030').attr("name"),
-                "nivel": "Si"
-            },
-            {
-                "corden": "1031",
-                "cstatus": $('#1031').is(':checked'),
-                "nid_menupadre": $('#1031').attr("name"),
-                "nivel": "Si"
-            },
-            {
-                "corden": "1032",
-                "cstatus": $('#1032').is(':checked'),
-                "nid_menupadre": $('#1032').attr("name"),
-                "nivel": "Si"
-            },
-            {
-                "corden": "1033",
-                "cstatus": $('#1033').is(':checked'),
-                "nid_menupadre": $('#1033').attr("name"),
-                "nivel": "Si"
-            },
-            {
-                "corden": "1034",
-                "cstatus": $('#1034').is(':checked'),
-                "nid_menupadre": $('#1034').attr("name"),
-                "nivel": "Si"
-            },
-            {
-                "corden": "1035",
-                "cstatus": $('#1035').is(':checked'),
-                "nid_menupadre": $('#1035').attr("name"),
-                "nivel": "Si"
-            },
-            {
-                "corden": "1036",
-                "cstatus": $('#1036').is(':checked'),
-                "nid_menupadre": $('#1036').attr("name"),
-                "nivel": "Si"
-            }
-        ]
-
-
-        var ModuloAlmacen = 'false';
-        var ModuloVentas = 'false';
-        var ModuloAdministracion = 'false';
-
-        var OpcionAlmacenTablas = 'false';
-        var OpcionAlmacenOperaciones = 'false';
-        var OpcionAlmacenConsulta = 'false';
-        var OpcionAlmacenReporte = 'false';
-
-        var OpcionVentaTablas = 'false';
-        var OpcionVentaOperaciones = 'false';
-        var OpcionVentaConsulta = 'false';
-        var OpcionVentaReporte = 'false';
-
-
-        for (var i = 0; i < obj_menu.length; i++) {
-            if (obj_menu[i].cstatus == true) {
-                if (obj_menu[i].nid_menupadre == '1') {
-                    ModuloAlmacen = 'True';
-                } else if (obj_menu[i].nid_menupadre == '17') {
-                    ModuloVentas = 'True';
-                } else if (obj_menu[i].nid_menupadre == '33') {
-                    ModuloAdministracion = 'True';
-
-                } else if (obj_menu[i].nid_menupadre == '2') {
-                    OpcionAlmacenTablas = 'True';
-                    ModuloAlmacen = 'True';
-                } else if (obj_menu[i].nid_menupadre == '8') {
-                    OpcionAlmacenOperaciones = 'True';
-                    ModuloAlmacen = 'True';
-                } else if (obj_menu[i].nid_menupadre == '12') {
-                    OpcionAlmacenConsulta = 'True';
-                    ModuloAlmacen = 'True';
-                } else if (obj_menu[i].nid_menupadre == '16') {
-                    OpcionAlmacenReporte = 'True';
-                    ModuloAlmacen = 'True';
-                } else if (obj_menu[i].nid_menupadre == '18') {
-                    OpcionVentaTablas = 'True';
-                    ModuloVentas = 'True';
-                } else if (obj_menu[i].nid_menupadre == '21') {
-                    OpcionVentaOperaciones = 'True';
-                    ModuloVentas = 'True';
-                } else if (obj_menu[i].nid_menupadre == '28') {
-                    OpcionVentaConsulta = 'True';
-                    ModuloVentas = 'True';
-                } else if (obj_menu[i].nid_menupadre == '32') {
-                    OpcionVentaReporte = 'True';
-                    ModuloVentas = 'True';
-                }
-            }
-        }
-        /// <reference path="../Administracion/Roles.aspx" />
-
-        var obj_modulo = [
-            {
-                "corden": "1",
-                "cstatus": ModuloAlmacen
-            },
-            {
-                "corden": "2",
-                "cstatus": ModuloVentas
-            },
-            {
-                "corden": "3",
-                "cstatus": ModuloAdministracion
-            },
-            {
-                "corden": "101",
-                "cstatus": OpcionAlmacenTablas
-            },
-            {
-                "corden": "102",
-                "cstatus": OpcionAlmacenOperaciones
-            },
-            {
-                "corden": "103",
-                "cstatus": OpcionAlmacenConsulta
-            },
-            {
-                "corden": "104",
-                "cstatus": OpcionAlmacenReporte
-            },
-            {
-                "corden": "105",
-                "cstatus": OpcionVentaTablas
-            },
-            {
-                "corden": "106",
-                "cstatus": OpcionVentaOperaciones
-            },
-            {
-                "corden": "107",
-                "cstatus": OpcionVentaConsulta
-            },
-            {
-                "corden": "108",
-                "cstatus": OpcionVentaReporte
-            }
-        ]
+        // Los modulos (cabeceras de seccion) ya no se envian desde el cliente:
+        // el SP webDatpos_cargarRol incluye automaticamente a los ancestros de
+        // cada menu concedido, por lo que el modulo se resuelve en el servidor.
+        var obj_modulo = [];
 
         var obj_rol = [
             {
@@ -530,15 +192,9 @@ function Guardar() {
 
 function Nuevo() {
     $('#lb_codigo').text("");
-    $(".limpiar_checked").removeAttr("checked");
-    var objIdMenuPadre = llenarobjeto('Roles.aspx/ObtenerIdPadre');
-    for (var i = 0; i < objIdMenuPadre.length; i++) {
-        $("." + objIdMenuPadre[i].nid_menupadre).removeAttr("checked");
-    }
-
-
-
-    $(".limpiar_checked").removeAttr("checked");
+    $('#ColumnaRoles input[type="checkbox"]').prop('checked', false).each(function () {
+        _pintarFilaAcceso($(this));
+    });
     $('#tb_codigo').focus();
     $('.nav-tabs li:eq(0) a').tab('show');
     $('#tablanumerador > tbody').html('');
@@ -761,15 +417,15 @@ function ConsultaIdAccesos(id_rol) {
             for (var i = 0; i < obj.length; i++) {
 
                 if (obj[i].corden < 100) {
-                    ModulosRoles = '<h4 style="border-bottom: groove; margin-bottom: 30px; margin-top: 30px; width:60%;">' + obj[i].cdsc_menu + '</h4> <div id="' + obj[i].id_menu + '" ></div>'
+                    ModulosRoles = '<h4 class="acc-modulo">' + obj[i].cdsc_menu + '</h4><div id="' + obj[i].id_menu + '" class="acc-modulo-body"></div>'
                     $("#ColumnaRoles").append(ModulosRoles);
                     for (var j = 0; j < obj.length; j++) {
                         if (obj[j].corden < 1000 && obj[i].id_menu == obj[j].nid_menupadre) {
-                            CabeceraRoles = '<div class="input-group"><input ' + obj[j].cstatus + ' name="' + obj[j].nid_menupadre + '" value="' + obj[j].corden + '" class="limpiar_checked disabled" style="margin-top:10px;cursor: default;"   type="checkbox" id="' + obj[j].corden + '" disabled runat="server" /><label style="padding-left:10px;" id="Label5">' + obj[j].cdsc_menu + '</label></div><div id="' + obj[j].id_menu + '" ></div>'
+                            CabeceraRoles = '<div class="input-group acc-cabecera"><input ' + obj[j].cstatus + ' name="' + obj[j].nid_menupadre + '" value="' + obj[j].corden + '" data-idmenu="' + obj[j].id_menu + '" class="limpiar_checked chk_acceso disabled" type="checkbox" id="' + obj[j].corden + '" disabled runat="server" /><label class="acc-cabecera-lb">' + obj[j].cdsc_menu + '</label></div><div id="' + obj[j].id_menu + '" class="acc-detalle-body"></div>'
                             $("#" + obj[j].nid_menupadre).append(CabeceraRoles);
                             for (var k = 0; k < obj.length; k++) {
                                 if (obj[k].corden > 1000 && obj[j].id_menu == obj[k].nid_menupadre) {
-                                    DetalleRoles = '<div class="row"><div class="col-sm-10"><div class="input-group"><input ' + obj[k].cstatus + ' name="' + obj[k].nid_menupadre + '" disabled  value="' + obj[k].corden + '"  class="limpiarChecked' + obj[j].id_menu + ' disabled" style="margin-top:10px;cursor: default;" type="checkbox"  id="' + obj[k].corden + '" runat="server" /><label style="padding-left:10px;" class="moderno_lb">' + obj[k].cdsc_menu + '</label></div></div></div>'
+                                    DetalleRoles = '<div class="row acc-detalle"><div class="col-sm-12"><div class="input-group"><input ' + obj[k].cstatus + ' name="' + obj[k].nid_menupadre + '" value="' + obj[k].corden + '" data-idmenu="' + obj[k].id_menu + '" class="limpiar_checked chk_acceso disabled" type="checkbox" id="' + obj[k].corden + '" disabled runat="server" /><label class="acc-detalle-lb moderno_lb">' + obj[k].cdsc_menu + '</label></div></div></div>'
 
                                     $("#" + obj[k].nid_menupadre).append(DetalleRoles);
                                 }
@@ -785,47 +441,7 @@ function ConsultaIdAccesos(id_rol) {
         }
     });
 
-    $('input[type="checkbox"]').on('change', function (e) {
-        if (this.checked) {
-
-            if (e.currentTarget.id == '101') {
-                $('.limpiarChecked2').prop('checked', true);
-            } else if (e.currentTarget.id == '102') {
-                $('.limpiarChecked8').prop('checked', true);
-            } else if (e.currentTarget.id == '103') {
-                $('.limpiarChecked12').prop('checked', true);
-            } else if (e.currentTarget.id == '104') {
-                $('.limpiarChecked16').prop('checked', true);
-            } else if (e.currentTarget.id == '105') {
-                $('.limpiarChecked18').prop('checked', true);
-            } else if (e.currentTarget.id == '106') {
-                $('.limpiarChecked21').prop('checked', true);
-            } else if (e.currentTarget.id == '107') {
-                $('.limpiarChecked28').prop('checked', true);
-            } else if (e.currentTarget.id == '108') {
-                $('.limpiarChecked32').prop('checked', true);
-            }
-
-        } else {
-            if (e.currentTarget.id == '101') {
-                $(".limpiarChecked2").removeAttr("checked");
-            } else if (e.currentTarget.id == '102') {
-                $('.limpiarChecked8').removeAttr("checked");
-            } else if (e.currentTarget.id == '103') {
-                $('.limpiarChecked12').removeAttr("checked");
-            } else if (e.currentTarget.id == '104') {
-                $('.limpiarChecked16').removeAttr("checked");
-            } else if (e.currentTarget.id == '105') {
-                $('.limpiarChecked18').removeAttr("checked");
-            } else if (e.currentTarget.id == '106') {
-                $('.limpiarChecked21').removeAttr("checked");
-            } else if (e.currentTarget.id == '107') {
-                $('.limpiarChecked28').removeAttr("checked");
-            } else if (e.currentTarget.id == '108') {
-                $('.limpiarChecked32').removeAttr("checked");
-            }
-        }
-    });
+    _bindArbolAccesos();
 
 }
 
@@ -906,15 +522,15 @@ function CargarTablaMenu() {
     if (obj.length > 0) {
         for (var i = 0; i < obj.length; i++) {
             if (obj[i].corden < 100 && obj[i].cstatus == "1") {
-                ModulosRoles = '<h4 style="border-bottom: groove; margin-bottom: 30px; margin-top: 30px; width:60%;">' + obj[i].cdsc_menu + '</h4> <div id="' + obj[i].id_menu + '" ></div>'
+                ModulosRoles = '<h4 class="acc-modulo">' + obj[i].cdsc_menu + '</h4><div id="' + obj[i].id_menu + '" class="acc-modulo-body"></div>'
                 $("#ColumnaRoles").append(ModulosRoles);
                 for (var j = 0; j < obj.length; j++) {
                     if (obj[j].corden < 1000 && obj[i].id_menu == obj[j].nid_menupadre && obj[j].cstatus == "1") {
-                        CabeceraRoles = '<div class="input-group"><input  name="' + obj[j].nid_menupadre + '" value="' + obj[j].corden + '" class="limpiar_checked disabled" style="margin-top:10px;cursor: default;"   type="checkbox" id="' + obj[j].corden + '" disabled runat="server" /><label style="padding-left:10px;" id="Label5">' + obj[j].cdsc_menu + '</label></div><div id="' + obj[j].id_menu + '" ></div>'
+                        CabeceraRoles = '<div class="input-group acc-cabecera"><input name="' + obj[j].nid_menupadre + '" value="' + obj[j].corden + '" data-idmenu="' + obj[j].id_menu + '" class="limpiar_checked chk_acceso disabled" type="checkbox" id="' + obj[j].corden + '" disabled runat="server" /><label class="acc-cabecera-lb">' + obj[j].cdsc_menu + '</label></div><div id="' + obj[j].id_menu + '" class="acc-detalle-body"></div>'
                         $("#" + obj[j].nid_menupadre).append(CabeceraRoles);
                         for (var k = 0; k < obj.length; k++) {
                             if (obj[k].corden > 1000 && obj[j].id_menu == obj[k].nid_menupadre && obj[k].cstatus == "1") {
-                                DetalleRoles = '<div class="row"><div class="col-sm-10"><div class="input-group"><input name="' + obj[k].nid_menupadre + '" value="' + obj[k].corden + '" disabled class="limpiarChecked' + obj[j].id_menu + ' disabled" style="margin-top:10px;cursor: default;" type="checkbox"  id="' + obj[k].corden + '" runat="server" /><label style="padding-left:10px;" class="moderno_lb">' + obj[k].cdsc_menu + '</label></div></div></div>'
+                                DetalleRoles = '<div class="row acc-detalle"><div class="col-sm-12"><div class="input-group"><input name="' + obj[k].nid_menupadre + '" value="' + obj[k].corden + '" data-idmenu="' + obj[k].id_menu + '" class="limpiar_checked chk_acceso disabled" type="checkbox" id="' + obj[k].corden + '" disabled runat="server" /><label class="acc-detalle-lb moderno_lb">' + obj[k].cdsc_menu + '</label></div></div></div>'
 
                                 $("#" + obj[k].nid_menupadre).append(DetalleRoles);
                             }
@@ -925,48 +541,7 @@ function CargarTablaMenu() {
         }
     }
 
-    $('input[type="checkbox"]').on('change', function (e) {
-        if (this.checked) {
-
-            if (e.currentTarget.id == '101') {
-                $('.limpiarChecked2').prop('checked', true);
-            } else if (e.currentTarget.id == '102') {
-                $('.limpiarChecked8').prop('checked', true);
-            } else if (e.currentTarget.id == '103') {
-                $('.limpiarChecked12').prop('checked', true);
-            } else if (e.currentTarget.id == '104') {
-                $('.limpiarChecked16').prop('checked', true);
-            } else if (e.currentTarget.id == '105') {
-                $('.limpiarChecked18').prop('checked', true);
-            } else if (e.currentTarget.id == '106') {
-                $('.limpiarChecked21').prop('checked', true);
-            } else if (e.currentTarget.id == '107') {
-                $('.limpiarChecked28').prop('checked', true);
-            } else if (e.currentTarget.id == '108') {
-                $('.limpiarChecked32').prop('checked', true);
-            }
-
-        } else {
-            if (e.currentTarget.id == '101') {
-                $(".limpiarChecked2").removeAttr("checked");
-            } else if (e.currentTarget.id == '102') {
-                $('.limpiarChecked8').removeAttr("checked");
-            } else if (e.currentTarget.id == '103') {
-                $('.limpiarChecked12').removeAttr("checked");
-            } else if (e.currentTarget.id == '104') {
-                $('.limpiarChecked16').removeAttr("checked");
-            } else if (e.currentTarget.id == '105') {
-                $('.limpiarChecked18').removeAttr("checked");
-            } else if (e.currentTarget.id == '106') {
-                $('.limpiarChecked21').removeAttr("checked");
-            } else if (e.currentTarget.id == '107') {
-                $('.limpiarChecked28').removeAttr("checked");
-            } else if (e.currentTarget.id == '108') {
-                $('.limpiarChecked32').removeAttr("checked");
-            }
-        }
-    });
-
+    _bindArbolAccesos();
 
 }
 
