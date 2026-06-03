@@ -67,8 +67,11 @@ switch ($method) {
                 $objUsuario
             );
         } else {
-            // "Parche salvavidas" al rol por si viene vacío
-            $idRolFiltro = !empty($objUsuario->id_rol) ? $objUsuario->id_rol : 1;
+            // Deny-by-default: si el empleado no tiene un rol valido NO se le
+            // concede acceso (antes se usaba el rol 1, que suele tener acceso
+            // total, y por eso un usuario sin rol veia todos los menus). Con
+            // id_rol = 0 el INNER JOIN con Accesos no devuelve menus.
+            $idRolFiltro = !empty($objUsuario->id_rol) ? $objUsuario->id_rol : 0;
             $rows = Database::selectStoredTenant(
                 'webDatpos_cargarRol',
                 array(
