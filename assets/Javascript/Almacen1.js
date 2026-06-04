@@ -470,7 +470,9 @@ function _poblarTipDocSelect() {
 
 // Garantizar que el select siempre esté poblado al abrir el modal,
 // independientemente del orden onclick vs data-toggle de Bootstrap.
-$(document).on('show.bs.modal', '#modalnuevo', function () {
+// .off antes de .on: este script se re-ejecuta en cada navegación SPA;
+// el namespace evita que el handler se duplique en cada visita.
+$(document).off('show.bs.modal.almacennuevo').on('show.bs.modal.almacennuevo', '#modalnuevo', function () {
     _poblarTipDocSelect();
 });
 

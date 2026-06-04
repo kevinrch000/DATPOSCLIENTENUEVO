@@ -548,13 +548,71 @@ function Imprimir(){
 //    setTimeout(function(){newWin.close();},2000);
 
 //    ArmarHtml();
-    var mywindow = window.open();
-    mywindow.document.write(document.getElementById("zona-imprimir").innerHTML);
-    setTimeout(function () { mywindow.print(); }, 500);//espera a que cargue el logo
-    setTimeout(function () { mywindow.close(); }, 2000);//cierra la impresion, tiene que ser a 2000 milisegundos 
+    var ticket = document.getElementById("zona-imprimir");
+    if (!ticket) { LimpiarHtmlTicket(); return; }
 
-//    $("#zona-imprimir").html("");
-    
+    // BUG IMPRESIÓN POS: antes se abría una ventana en blanco y se escribía
+    // solo el innerHTML del ticket, SIN ninguna hoja de estilos y perdiendo el
+    // contenedor #zona-imprimir. Resultado: el comprobante salía desalineado y
+    // sin el formato angosto de impresora POS, porque todo el diseño vive en el
+    // CSS de Facturacion.php (reglas scopeadas a #zona-imprimir) + la grilla de
+    // Bootstrap. Aquí copiamos TODOS los estilos del documento (links + <style>)
+    // y conservamos el contenedor #zona-imprimir para reproducir exactamente el
+    // diseño llenado en pantalla.
+    var head = '';
+    var nodes = document.querySelectorAll('link[rel="stylesheet"], style');
+    for (var i = 0; i < nodes.length; i++) {
+        var node = nodes[i];
+        if (node.tagName === 'LINK') {
+            // node.href ya es absoluto: necesario porque la ventana de
+            // impresión no tiene <base href> para resolver rutas relativas.
+            if (node.href) head += '<link rel="stylesheet" href="' + node.href + '">';
+        } else {
+            head += '<style>' + node.innerHTML + '</style>';
+        }
+    }
+
+    // Ajustes específicos de impresión en papel POS (rollo angosto, sin
+    // márgenes ni borde de pantalla).
+    head += '<style>'
+          + '@page { size: 80mm auto; margin: 0; }'
+          + 'html, body { margin: 0 !important; padding: 0 !important; background: #fff !important; }'
+          + 'body { width: 280px !important; }'
+          + '#zona-imprimir { display: block !important; margin: 0 auto !important; border: none !important; }'
+          + '</style>';
+
+    var mywindow = window.open('', '_blank', 'width=340,height=640');
+    if (!mywindow) {
+        // Popup bloqueado: avisar y no romper el flujo.
+        if (typeof Mensaje === 'function') {
+            Mensaje('Advertencia', 'Habilite las ventanas emergentes para imprimir el comprobante.', 'warning');
+        }
+        LimpiarHtmlTicket();
+        return;
+    }
+
+    mywindow.document.open();
+    mywindow.document.write(
+        '<!DOCTYPE html><html lang="es"><head><meta charset="utf-8">'
+        + '<title>Comprobante</title>' + head + '</head><body>'
+        + ticket.outerHTML
+        + '</body></html>'
+    );
+    mywindow.document.close();
+
+    function doPrint() {
+        try { mywindow.focus(); mywindow.print(); } catch (e) { /* noop */ }
+        setTimeout(function () { try { mywindow.close(); } catch (e) { /* noop */ } }, 800);
+    }
+
+    // Imprimir cuando la ventana (logo/QR en data URI, hojas de estilo) cargue.
+    if (mywindow.document.readyState === 'complete') {
+        setTimeout(doPrint, 300);
+    } else {
+        mywindow.onload = function () { setTimeout(doPrint, 200); };
+        setTimeout(doPrint, 1500); // respaldo por si onload no dispara
+    }
+
     LimpiarHtmlTicket();
 }
 
@@ -1880,7 +1938,9 @@ function PasarArticuloCodigo(codigo) {
 }
 
 
-$(document).keydown(function (e) {
+// .off antes de .on: este script se re-ejecuta en cada navegación SPA;
+// sin el namespace + off, el handler se duplicaría en cada visita.
+$(document).off('keydown.facturacion').on('keydown.facturacion', function (e) {
     
     if (e.ctrlKey && (e.which === 81)) {
         Cambiar_Cobranza();
@@ -2375,7 +2435,7 @@ function ModalConsultarClientes() {
     } 
 }
 
-$(document).keyup(function(e) {
+$(document).off('keyup.facturacion').on('keyup.facturacion', function(e) {
   if (e.keyCode === 27) {
     $("#sugerencias_clientes").html("");
     $("#sugerencias_clientes").hide();

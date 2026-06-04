@@ -29,6 +29,40 @@
     var navigating = false;
     var initialHistoryReplaced = false;
 
+    // Registro de <script src> de LIBRERÍAS ya cargadas en la sesión.
+    // Las páginas incrustan en su contenido <script src> de librerías de
+    // terceros (jspdf, html2canvas, qrcode, switcher, DataTables, etc.).
+    // Si se reinyectan en cada navegación, esas librerías se re-ejecutan,
+    // duplican sus binds a `document` y corrompen sus widgets — lo que hace
+    // que tras navegar varias veces los combos/estilos dejen de cargarse y
+    // haya que recargar la página. Cargamos cada librería UNA sola vez.
+    var loadedExternalScripts = {};
+
+    /** Normaliza un src a URL absoluta para comparar. */
+    function absUrl(src) {
+        try {
+            var a = document.createElement('a');
+            a.href = src;
+            return a.href;
+        } catch (e) {
+            return src;
+        }
+    }
+
+    /**
+     * Marca como ya cargados todos los <script src> presentes en el documento
+     * al iniciar (head + contenido de la página inicial), para no volver a
+     * descargarlos/re-ejecutarlos en la primera navegación SPA.
+     */
+    function seedLoadedScripts() {
+        try {
+            var nodes = document.querySelectorAll('script[src]');
+            for (var i = 0; i < nodes.length; i++) {
+                if (nodes[i].src) loadedExternalScripts[absUrl(nodes[i].src)] = true;
+            }
+        } catch (e) { /* noop */ }
+    }
+
     /**
      * Reemplaza el estado inicial del history para que popstate funcione
      * sobre la página actual cuando el usuario empieza a navegar.
@@ -134,7 +168,10 @@
                     s.setAttribute('data-spa-inline', '');
                     if (sc.type === 'external') {
                         s.src = sc.src;
-                        s.onload = function () { resolve(); };
+                        s.onload = function () {
+                            loadedExternalScripts[absUrl(sc.src)] = true;
+                            resolve();
+                        };
                         s.onerror = function () {
                             // No bloquear toda la cadena por un script externo perdido
                             console.warn('SPA: no se pudo cargar', sc.src);
@@ -269,8 +306,15 @@
             var externalContent = [];
             var inlineContent = [];
             contentScripts.forEach(function (sc) {
-                if (sc.type === 'external') externalContent.push(sc);
-                else inlineContent.push(sc);
+                if (sc.type === 'external') {
+                    // Librerías de terceros incrustadas en el contenido: cargar
+                    // solo una vez por sesión. Re-ejecutarlas en cada navegación
+                    // duplica sus binds a document y corrompe sus widgets.
+                    if (loadedExternalScripts[absUrl(sc.src)]) return;
+                    externalContent.push(sc);
+                } else {
+                    inlineContent.push(sc);
+                }
             });
 
             var allScripts = externalContent.slice();
@@ -378,6 +422,9 @@
     // ------------------------------------------------------------------
     // Inicialización: guardar el estado inicial
     // ------------------------------------------------------------------
-    $(function () { replaceInitialState(); });
+    $(function () {
+        seedLoadedScripts();
+        replaceInitialState();
+    });
 
 })(jQuery);
