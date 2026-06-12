@@ -1,0 +1,820 @@
+/* ================================================================
+   DATPOS — Modern UI (additive)
+   ----------------------------------------------------------------
+   Capa visual moderna construida SOBRE Site.css / Moderno.css.
+   No reemplaza ningún estilo de tablas, formularios, JS o IDs.
+   Se activa únicamente cuando un contenedor lleva la clase
+   `.modern-page` (típicamente en `.c-content-center`).
+   Respeta la paleta corporativa:
+     #228ac9 (azul marca)  |  #21b5d6 (cian acento)
+     #046bb4 / #145f8a (estados oscuros)
+     #4BBCF4 / #61C0BF (acentos)
+     #f0ad4e (warn) | #5cb85c (ok) | #f44336 (danger)
+   ================================================================ */
+
+:root {
+    --brand-primary: #228ac9;
+    --brand-primary-dark: #046bb4;
+    --brand-primary-darker: #145f8a;
+    --brand-accent: #21b5d6;
+    --brand-accent-soft: #4BBCF4;
+    --brand-teal: #61C0BF;
+    --brand-warning: #f0ad4e;
+    --brand-success: #5cb85c;
+    --brand-danger: #f44336;
+    --bg-page: #f4f7fb;
+    --bg-card: #ffffff;
+    --bg-section: #f8fafc;
+    --text-primary: #1f3a52;
+    --text-secondary: #5b6f81;
+    --text-muted: #8a9aab;
+    --border-subtle: #e5edf5;
+    --border-strong: #cfdce8;
+    --shadow-sm: 0 1px 2px rgba(15, 42, 67, 0.06);
+    --shadow-md: 0 4px 12px rgba(15, 42, 67, 0.08);
+    --shadow-lg: 0 8px 24px rgba(34, 138, 201, 0.12);
+    --radius-sm: 6px;
+    --radius-md: 10px;
+    --radius-lg: 14px;
+}
+
+/* ---------- Contenedor moderno ---------- */
+.modern-page {
+    font-family: 'Inter', 'Roboto', system-ui, -apple-system, sans-serif;
+}
+
+/* ---------- Cabecera de página ---------- */
+.modern-page-header {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin: 4px 0 18px;
+    padding: 14px 20px;
+    background: linear-gradient(135deg, #ffffff 0%, #f3f8fc 100%);
+    border: 1px solid var(--border-subtle);
+    border-left: 4px solid var(--brand-primary);
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-sm);
+}
+
+.modern-page-header .mph-icon {
+    width: 44px;
+    height: 44px;
+    flex: 0 0 44px;
+    border-radius: 12px;
+    background: linear-gradient(135deg, var(--brand-primary) 0%, var(--brand-accent) 100%);
+    color: #fff;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 22px;
+    box-shadow: 0 6px 16px rgba(34, 138, 201, 0.35);
+}
+
+.modern-page-header .mph-icon .material-icons {
+    font-size: 24px;
+}
+
+.modern-page-header .mph-text {
+    line-height: 1.25;
+}
+
+.modern-page-header h1 {
+    margin: 0;
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--text-primary);
+    letter-spacing: -0.01em;
+}
+
+.modern-page-header p {
+    margin: 2px 0 0;
+    font-size: 12.5px;
+    color: var(--text-secondary);
+}
+
+.modern-page-header .mph-spacer {
+    flex: 1 1 auto;
+}
+
+.modern-page-header .mph-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 10px;
+    border-radius: 999px;
+    background: #eaf4fb;
+    color: var(--brand-primary-darker);
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.modern-page-header .mph-chip .material-icons {
+    font-size: 15px;
+}
+
+/* ---------- Título de sección (reemplaza H4 con border-bottom: groove) ---------- */
+.modern-section-title {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin: 22px 0 16px;
+    padding: 6px 0 8px;
+    font-size: 13.5px;
+    font-weight: 700;
+    color: var(--text-primary);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    border-bottom: 2px solid var(--border-subtle);
+    width: auto !important;
+}
+
+.modern-section-title::before {
+    content: '';
+    width: 4px;
+    height: 18px;
+    background: linear-gradient(180deg, var(--brand-primary), var(--brand-accent));
+    border-radius: 2px;
+}
+
+.modern-section-title .material-icons {
+    font-size: 18px;
+    color: var(--brand-primary);
+}
+
+/* ---------- Tarjetas KPI (Dashboard Home) ---------- */
+.modern-page .card.card-stats {
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-md);
+    background: var(--bg-card);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    overflow: hidden;
+}
+
+.modern-page .card.card-stats:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-lg);
+}
+
+.modern-page .card.card-stats .card-header-icon .card-icon {
+    border-radius: 14px !important;
+    width: 56px;
+    height: 56px;
+    display: inline-flex !important;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 6px 16px rgba(34, 138, 201, 0.25);
+}
+
+.modern-page .card.card-stats .card-icon .material-icons {
+    font-size: 28px;
+    color: #fff;
+}
+
+.modern-page .card.card-stats .card-title {
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-top: 8px;
+}
+
+.modern-page .card.card-stats .card-category {
+    color: var(--text-secondary);
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+}
+
+.modern-page .card.card-stats .card-footer {
+    border-top: 1px solid var(--border-subtle);
+    padding-top: 8px;
+}
+
+/* ---------- Pestañas (Tabs) ---------- */
+.modern-page .nav-tabs {
+    border-bottom: 1px solid var(--border-subtle) !important;
+    margin-bottom: 0;
+    padding: 0 4px;
+}
+
+.modern-page .nav-tabs > li {
+    margin-bottom: -1px;
+}
+
+.modern-page .nav-tabs > li > a.tabcito {
+    border-radius: 10px 10px 0 0 !important;
+    font-weight: 600;
+    font-size: 14px !important;
+    padding: 10px 18px !important;
+    color: var(--brand-primary) !important;
+    border: 1px solid transparent !important;
+    transition: background 0.15s ease, color 0.15s ease;
+}
+
+.modern-page .nav-tabs > li > a.tabcito:hover {
+    background: #eef6fb;
+    border-color: var(--border-subtle) !important;
+}
+
+.modern-page .nav-tabs > li.active > a.tabcito,
+.modern-page .nav-tabs > li.active > a.tabcito:focus,
+.modern-page .nav-tabs > li.active > a.tabcito:hover {
+    background: #fff !important;
+    border: 1px solid var(--border-subtle) !important;
+    border-bottom: 3px solid var(--brand-primary) !important;
+    color: var(--brand-primary-darker) !important;
+}
+
+.modern-page .tab-content {
+    background: #fff;
+    border: 1px solid var(--border-subtle);
+    border-top: 0;
+    border-radius: 0 0 var(--radius-md) var(--radius-md);
+}
+
+/* ---------- Barra de filtros ---------- */
+.modern-page .navbar-default {
+    background: transparent !important;
+    border: 0 !important;
+    margin-bottom: 8px !important;
+    min-height: 36px;
+}
+
+.modern-page .navbar-default .dropdown-toggle {
+    border: 1px solid var(--border-subtle);
+    background: #fff;
+    border-radius: 999px;
+    padding: 6px 14px !important;
+    font-size: 12.5px;
+    color: var(--brand-primary) !important;
+    font-weight: 600;
+    box-shadow: var(--shadow-sm);
+    transition: background 0.15s ease, border-color 0.15s ease;
+}
+
+.modern-page .navbar-default .dropdown-toggle:hover {
+    background: #f3f8fc;
+    border-color: var(--brand-primary);
+}
+
+/* ---------- Tablas (overrides suaves, NO destruye DataTables) ---------- */
+.modern-page table.dataTable thead th,
+.modern-page .table thead th {
+    background: linear-gradient(180deg, #f3f8fc 0%, #e9f1f8 100%) !important;
+    color: var(--text-primary) !important;
+    font-weight: 600;
+    font-size: 13px;
+    border-bottom: 2px solid var(--brand-primary) !important;
+}
+
+.modern-page table.dataTable tbody tr:hover,
+.modern-page .table tbody tr:hover {
+    background-color: #f3f8fc !important;
+}
+
+/* ---------- Formularios ---------- */
+.modern-page .moderno_lb {
+    font-weight: 600 !important;
+    color: var(--text-secondary) !important;
+    font-size: 12.5px;
+    letter-spacing: 0.01em;
+    margin-top: 9px !important;
+}
+
+.modern-page .moderno_tb {
+    background-color: #fff !important;
+    border-radius: 8px 8px 0 0 !important;
+    border: 0 !important;
+    border-bottom: 1px solid var(--border-strong) !important;
+    transition: border-color 0.15s, box-shadow 0.15s, background 0.15s;
+}
+
+.modern-page .moderno_tb:focus {
+    border-bottom: 2px solid var(--brand-primary) !important;
+    background-color: #fbfdff !important;
+    box-shadow: 0 2px 0 0 rgba(34, 138, 201, 0.08) !important;
+}
+
+/* ---------- Botón-pildora con icono (acciones del Dashboard) ---------- */
+.modern-page .action-pill {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    margin-left: 6px;
+    color: #fff !important;
+    text-decoration: none !important;
+    box-shadow: var(--shadow-sm);
+    transition: transform 0.15s ease, box-shadow 0.15s ease, filter 0.15s ease;
+}
+
+.modern-page .action-pill:hover,
+.modern-page .action-pill:focus {
+    transform: translateY(-1px);
+    box-shadow: var(--shadow-md);
+    filter: brightness(1.05);
+    color: #fff !important;
+}
+
+.modern-page .action-pill .material-icons {
+    font-size: 20px;
+}
+
+.modern-page .action-pill.ap-primary {
+    background: var(--brand-primary);
+}
+
+.modern-page .action-pill.ap-accent {
+    background: var(--brand-accent);
+}
+
+.modern-page .action-pill.ap-warning {
+    background: var(--brand-warning);
+}
+
+.modern-page .action-pill.ap-success {
+    background: var(--brand-success);
+}
+
+.modern-page .action-pill.ap-teal {
+    background: var(--brand-teal);
+}
+
+/* ---------- Toolbar de acciones (envoltorio de action-pills) ---------- */
+.modern-page .modern-toolbar {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    gap: 4px;
+    padding: 4px 0;
+}
+
+/* ---------- Modales (refinamiento sutil, mantiene IDs) ---------- */
+.modern-page .modal-content {
+    border-radius: var(--radius-md) !important;
+    border: 0 !important;
+    box-shadow: 0 12px 40px rgba(15, 42, 67, 0.18) !important;
+    overflow: hidden;
+}
+
+.modern-page .modal-header {
+    background: linear-gradient(135deg, var(--brand-primary) 0%, var(--brand-accent) 100%) !important;
+    color: #fff !important;
+    padding: 14px 18px !important;
+    border-bottom: 0 !important;
+}
+
+.modern-page .modal-header .modal-title,
+.modern-page .modal-header h5 {
+    color: #fff !important;
+    font-weight: 600;
+    margin: 0;
+}
+
+.modern-page .modal-header .close {
+    color: #fff !important;
+    opacity: 0.9 !important;
+    text-shadow: none;
+    font-size: 22px;
+    margin-top: -2px;
+}
+
+.modern-page .modal-header .close:hover {
+    opacity: 1 !important;
+}
+
+.modern-page .modal-body {
+    background: #fff;
+    padding: 18px;
+}
+
+.modern-page .modal-footer {
+    background: #fafcfe;
+    border-top: 1px solid var(--border-subtle);
+    padding: 12px 18px;
+}
+
+/* ---------- Botones de selección dentro de modales (mantiene btn-primary) ---------- */
+.modern-page .modal .btn-primary {
+    background: var(--brand-primary) !important;
+    border-color: var(--brand-primary-dark) !important;
+}
+
+.modern-page .modal .btn-primary:hover {
+    background: var(--brand-primary-dark) !important;
+}
+
+/* ---------- Tarjeta envoltorio para grupos de campos ---------- */
+.modern-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-sm);
+    padding: 18px 22px;
+    margin: 8px 0 18px;
+}
+
+/* ================================================================
+   ESTILOS GLOBALES (fuera de .modern-page)
+   ----------------------------------------------------------------
+   Aplican a todo el shell: sidebar, header, botones CRUD y tablas.
+   Se mantienen los IDs/clases/handlers; solo se reestiliza.
+   ================================================================ */
+
+/* ---------- Sidebar lateral (.nav-side-menu) ---------- */
+.nav-side-menu {
+    background: linear-gradient(180deg, #0f4c75 0%, #1a6ea3 60%, #228ac9 100%) !important;
+    color: #e6f3fb !important;
+    font-family: 'Inter', 'Roboto', system-ui, sans-serif !important;
+    font-size: 13px !important;
+    box-shadow: 4px 0 16px rgba(15, 42, 67, 0.12);
+    border-right: 1px solid rgba(255, 255, 255, 0.04);
+}
+
+.nav-side-menu .brand,
+.nav-side-menu .c-logo-menu {
+    background: rgba(0, 0, 0, 0.18) !important;
+    color: #fff !important;
+    letter-spacing: 0.08em;
+    font-weight: 600;
+}
+
+.nav-side-menu .c-logo-menu label {
+    color: #fff;
+    font-weight: 700;
+    letter-spacing: 0.16em;
+    font-size: 14px;
+}
+
+/* Quita la flecha amarilla legacy (`#ffc700`) en bordes laterales */
+.nav-side-menu ul li::after {
+    display: none !important;
+}
+
+/* Items de primer nivel */
+.nav-side-menu li {
+    border-left: 3px solid transparent !important;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.04) !important;
+    transition: background 0.15s ease, border-color 0.15s ease;
+}
+
+.nav-side-menu li:hover {
+    background: rgba(255, 255, 255, 0.06) !important;
+    border-left: 3px solid var(--brand-accent) !important;
+    transition: background 0.15s ease, border-color 0.15s ease;
+}
+
+.nav-side-menu ul .active,
+.nav-side-menu li .active {
+    background: rgba(255, 255, 255, 0.10) !important;
+    border-left: 3px solid var(--brand-accent) !important;
+}
+
+.nav-side-menu li a {
+    color: rgba(255, 255, 255, 0.86) !important;
+    text-transform: none !important;
+    letter-spacing: 0.01em;
+    font-weight: 500 !important;
+    font-size: 13px !important;
+    padding-left: 56px !important;
+}
+
+.nav-side-menu li:hover a {
+    color: #fff !important;
+    padding-left: 56px !important;
+}
+
+.nav-side-menu li a img {
+    filter: drop-shadow(0 0 0 transparent);
+    opacity: 0.9;
+}
+
+/* Sub-menús */
+.nav-side-menu ul .sub-menu li,
+.nav-side-menu li .sub-menu li {
+    background-color: rgba(0, 0, 0, 0.18) !important;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.04) !important;
+}
+
+.nav-side-menu ul .sub-menu li:hover,
+.nav-side-menu li .sub-menu li:hover {
+    background-color: rgba(255, 255, 255, 0.06) !important;
+}
+
+.nav-side-menu ul .sub-menu li.active,
+.nav-side-menu li .sub-menu li.active {
+    background-color: var(--brand-accent) !important;
+    color: #fff !important;
+}
+
+.nav-side-menu ul .sub-menu li::before {
+    background-color: rgba(255, 255, 255, 0.04) !important;
+}
+
+/* Botón de logout y opciones generales */
+.nav-side-menu #Ul1 li a {
+    color: rgba(255, 255, 255, 0.86) !important;
+    padding-left: 24px !important;
+}
+
+.nav-side-menu #Ul1 li:hover a {
+    color: #fff !important;
+}
+
+/* Scrollbar refinada del sidebar */
+.nav-side-menu::-webkit-scrollbar {
+    width: 6px;
+}
+
+.nav-side-menu::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.18);
+    border-radius: 3px;
+}
+
+.nav-side-menu::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+/* ---------- Contenido principal y header superior ---------- */
+.c-content {
+    background-color: #f4f7fb !important;
+    box-shadow: none !important;
+}
+
+.c-content header {
+    background: #ffffff !important;
+    box-shadow: 0 1px 3px rgba(15, 42, 67, 0.08), 0 2px 12px rgba(15, 42, 67, 0.04) !important;
+    border-bottom: 1px solid var(--border-subtle);
+}
+
+.c-content header span.c-menu-toggle:before {
+    background-color: var(--brand-primary) !important;
+    box-shadow: 0 -7px 0 var(--brand-primary), 0 7px 0 var(--brand-primary) !important;
+}
+
+header span.header-title {
+    color: var(--text-primary);
+    font-family: 'Inter', 'Roboto', sans-serif;
+    letter-spacing: -0.01em;
+    font-size: 18px;
+    font-weight: 700;
+}
+
+.c-menu-user {
+    align-items: center;
+}
+
+.c-menu-user .info-name-type span:first-child {
+    color: var(--text-primary);
+    font-weight: 700;
+    font-size: 13px;
+}
+
+.c-menu-user .info-name-type span:last-child {
+    color: var(--text-secondary);
+    font-size: 11.5px;
+}
+
+.c-menu-user .glyphicon-cog {
+    color: var(--brand-primary);
+    transition: transform 0.3s ease;
+}
+
+.c-menu-user .glyphicon-cog:hover {
+    transform: rotate(45deg);
+}
+
+/* ---------- Botones CRUD modernos (.adminActions / .adminButtons) ---------- */
+/* Reescribe el "pill" cuadrado original por un botón circular pulido.
+   Se conservan los IDs (#btn_p_nuevo, ...) y los onclick. Los colores
+   los conserva cada botón via inline style; aquí ampliamos el tamaño,
+   añadimos sombra, gradiente sutil, e icono Material si está presente. */
+
+.adminActions {
+    top: 84px !important;
+    right: 3% !important;
+    z-index: 98;
+}
+
+.adminButtons {
+    display: flex !important;
+    gap: 6px;
+    padding: 6px 10px;
+    background: rgba(255, 255, 255, 0.94);
+    border: 1px solid var(--border-subtle);
+    border-radius: 999px;
+    box-shadow: var(--shadow-md);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+}
+
+.adminButtons .botonesnuevos {
+    width: 44px !important;
+    padding: 0 !important;
+    flex: 0 0 44px;
+}
+
+.adminButtons .botonesnuevos a {
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    width: 44px !important;
+    height: 44px !important;
+    border-radius: 50% !important;
+    margin: 0 !important;
+    color: #fff !important;
+    text-decoration: none !important;
+    transition: transform 0.15s ease, box-shadow 0.15s ease, filter 0.15s ease;
+    box-shadow: 0 2px 6px rgba(15, 42, 67, 0.15);
+    line-height: 1 !important;
+    position: relative !important;
+}
+
+.adminButtons .botonesnuevos a i.material-icons {
+    position: static !important;
+    transform: none !important;
+    top: auto !important;
+    left: auto !important;
+}
+
+.adminButtons .botonesnuevos a:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 14px rgba(15, 42, 67, 0.22);
+    filter: brightness(1.06);
+}
+
+.adminButtons .botonesnuevos a.botones_des {
+    opacity: 0.4;
+    filter: grayscale(0.3);
+    pointer-events: none;
+}
+
+.adminButtons .botonesnuevos a.botones_hab {
+    opacity: 1;
+    pointer-events: all;
+}
+
+/* Iconos: las imágenes legacy quedan en 18px, los iconos Material en 22px */
+.adminButtons .botonesnuevos a img {
+    width: 20px !important;
+    height: 20px !important;
+    margin: 0 !important;
+}
+
+.adminButtons .botonesnuevos a.fa,
+.adminButtons .botonesnuevos a [class^="fa-"] {
+    font-size: 18px !important;
+}
+
+.adminButtons .botonesnuevos a .material-icons {
+    font-size: 22px !important;
+    color: #fff;
+}
+
+/* Action-pills compartidos fuera del .modern-page (consultas con tabs estáticos) */
+.action-pill {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    margin-left: 6px;
+    color: #fff !important;
+    text-decoration: none !important;
+    box-shadow: var(--shadow-sm);
+    transition: transform 0.15s ease, box-shadow 0.15s ease, filter 0.15s ease;
+}
+
+.action-pill:hover,
+.action-pill:focus {
+    transform: translateY(-1px);
+    box-shadow: var(--shadow-md);
+    filter: brightness(1.05);
+    color: #fff !important;
+}
+
+.action-pill .material-icons {
+    font-size: 20px;
+}
+
+.action-pill.ap-primary { background: var(--brand-primary); }
+.action-pill.ap-accent  { background: var(--brand-accent); }
+.action-pill.ap-warning { background: var(--brand-warning); }
+.action-pill.ap-success { background: var(--brand-success); }
+.action-pill.ap-teal    { background: var(--brand-teal); }
+.action-pill.ap-danger  { background: var(--brand-danger); }
+
+/* ---------- Tablas globales (DataTables incluido) ---------- */
+/* Solo refinamos `th`s con fondo gris (`#999`, `#666`) o sin estilo,
+   sin tocar tablas marcadas (`tablecon`, `tableAVA`, etc., que ya
+   usan azul corporativo en Site.css). Para evitar romper grids con
+   tablas anidadas se usa el selector .dataTables_wrapper o tablas
+   explícitas (.display). */
+
+.dataTables_wrapper {
+    padding-top: 4px;
+}
+
+.dataTables_wrapper table.dataTable.display,
+table.display.dataTable {
+    border-collapse: separate !important;
+    border-spacing: 0;
+    border: 1px solid var(--border-subtle) !important;
+    border-radius: var(--radius-md);
+    overflow: hidden;
+}
+
+.dataTables_wrapper table.dataTable.display thead th,
+table.display.dataTable thead th {
+    background: linear-gradient(180deg, #eef6fb 0%, #dcebf6 100%) !important;
+    color: var(--text-primary) !important;
+    font-weight: 600 !important;
+    font-size: 12.5px !important;
+    text-transform: uppercase;
+    letter-spacing: 0.02em;
+    border-bottom: 2px solid var(--brand-primary) !important;
+}
+
+.dataTables_wrapper table.dataTable.display tbody tr {
+    transition: background 0.12s ease;
+}
+
+.dataTables_wrapper table.dataTable.display tbody tr:hover,
+table.display.dataTable tbody tr:hover {
+    background-color: #f3f8fc !important;
+}
+
+.dataTables_wrapper table.dataTable.display tbody td,
+table.display.dataTable tbody td {
+    font-size: 13px !important;
+    color: var(--text-primary);
+    padding: 8px 10px !important;
+}
+
+/* Paginación moderna */
+.dataTables_wrapper .dataTables_paginate .paginate_button {
+    border-radius: 8px !important;
+    padding: 5px 11px !important;
+    margin: 0 2px !important;
+    border: 1px solid var(--border-subtle) !important;
+    color: var(--brand-primary) !important;
+}
+
+.dataTables_wrapper .dataTables_paginate .paginate_button.current,
+.dataTables_wrapper .dataTables_paginate .paginate_button.current:hover {
+    background: var(--brand-primary) !important;
+    border-color: var(--brand-primary) !important;
+    color: #fff !important;
+}
+
+.dataTables_wrapper .dataTables_paginate .paginate_button:hover {
+    background: #eef6fb !important;
+    border-color: var(--brand-primary) !important;
+    color: var(--brand-primary-dark) !important;
+}
+
+/* Search box de DataTables */
+.dataTables_wrapper .dataTables_filter input {
+    border: 1px solid var(--border-subtle) !important;
+    border-radius: 999px !important;
+    padding: 6px 14px !important;
+    margin-left: 8px !important;
+    box-shadow: var(--shadow-sm);
+}
+
+.dataTables_wrapper .dataTables_filter input:focus {
+    border-color: var(--brand-primary) !important;
+    outline: 0 !important;
+    box-shadow: 0 0 0 3px rgba(34, 138, 201, 0.15) !important;
+}
+
+.dataTables_wrapper .dataTables_length select {
+    border-radius: 8px !important;
+    border: 1px solid var(--border-subtle) !important;
+    padding: 4px 6px !important;
+}
+
+/* ---------- Responsive helpers ---------- */
+@media (max-width: 768px) {
+    .modern-page-header {
+        padding: 12px 14px;
+    }
+
+    .modern-page-header h1 {
+        font-size: 16px;
+    }
+
+    .modern-page-header .mph-chip {
+        display: none;
+    }
+
+    .adminButtons {
+        flex-wrap: wrap;
+        border-radius: 16px;
+    }
+}

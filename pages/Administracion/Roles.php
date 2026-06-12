@@ -1,0 +1,266 @@
+<?php
+require_once __DIR__ . '/../../includes/auth.php';
+require_once __DIR__ . '/../../includes/helpers.php';
+require_once __DIR__ . '/../../config/database.php';
+requireAuth();
+
+$o = getUsuarioSesion();
+$pageTitle = 'Roles | DATPOS';
+$pageScript = 'Roles.js';
+$showCrudButtons = true;
+
+try {
+    $accesoRows = Database::selectStoredTenant('webDatpos_verificarAccesos', array(
+        '@ccod_cia' => $o->ccod_empresa ?? '',
+        '@id_rol' => $o->id_rol ?? 0,
+        '@id_menu' => '112'
+    ), $o);
+    if (empty($accesoRows)) {
+        error_log('[Roles] VerificarAccesos rol 112 sin filas; acceso permitido temporalmente durante migracion');
+    }
+} catch (Exception $e) {
+    error_log('[Roles] VerificarAccesos rol 112 fallo: ' . $e->getMessage());
+}
+
+$ubigeoEmpresa = trim(($o->cdepartamento ?? '') . '-' . ($o->cprovincia ?? '') . '-' . ($o->cdistrito ?? ''), '-');
+$ubigeoTienda  = trim(($o->cdepartamento_tienda ?? '') . '-' . ($o->cprovincia_tienda ?? '') . '-' . ($o->cdistrito_tienda ?? ''), '-');
+
+ob_start();
+?>
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-show-password/1.0.3/bootstrap-show-password.min.js"></script>
+    <link href="<?= basePath() ?>/assets/Styles/font-awesome-4.7.0/css/font-awesome.min.css" rel="stylesheet" type="text/css" />
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css">
+
+    <link href="<?= basePath() ?>/assets/Styles/Moderno.css" rel="stylesheet" type="text/css" />
+<input id="operacion" type="hidden"/>
+    <input id="hdd_rv" type="hidden"/>
+    <input id="hdd_ultimafila" type="hidden"/>
+    <input id="hdd_fila" type="hidden" value="0"/>
+	<input id="hdd_numeromenus" type="hidden" value="2"/>
+    <input id="hdd_numerofilas" type="hidden"/>
+        <!--Libreria para General Exel-->
+    <script src="<?= basePath() ?>/assets/Javascript/FileSaver.js" type="text/javascript"></script>
+  
+
+   
+    <style>
+     .row {
+        margin-right: 0px; 
+        margin-left: 0px; 
+        margin-bottom: 0px;
+    }
+
+    /* ---- Visualizacion del arbol de Accesos ---- */
+    #ColumnaRoles { padding: 4px 2px 16px; }
+
+    /* Modulo (ALMACEN, VENTAS, ...) */
+    #ColumnaRoles .acc-modulo {
+        border-bottom: 2px solid #d7dde3;
+        color: #2b3a4a;
+        font-weight: 700;
+        margin: 26px 0 10px;
+        padding-bottom: 6px;
+        width: 100%;
+    }
+    #ColumnaRoles .acc-modulo-body { padding-left: 6px; }
+
+    /* Cabecera / menu principal (TABLAS, OPERACIONES, ...) */
+    #ColumnaRoles .acc-cabecera {
+        align-items: center;
+        background: #f4f6f9;
+        border: 1px solid #e3e8ee;
+        border-left: 3px solid #6c8cae;
+        border-radius: 4px;
+        display: flex;
+        margin: 8px 0 2px;
+        padding: 7px 10px;
+    }
+    #ColumnaRoles .acc-cabecera-lb {
+        cursor: pointer;
+        font-weight: 600;
+        margin: 0 0 0 8px;
+    }
+
+    /* Detalle / hoja (paginas) */
+    #ColumnaRoles .acc-detalle {
+        align-items: center;
+        margin: 0 0 0 26px;
+        padding: 2px 0;
+    }
+    #ColumnaRoles .acc-detalle .input-group {
+        align-items: center;
+        display: flex;
+    }
+    #ColumnaRoles .acc-detalle-lb {
+        cursor: pointer;
+        font-weight: 400;
+        margin: 0 0 0 8px;
+    }
+    #ColumnaRoles .acc-detalle-body { padding-left: 4px; }
+
+    /* Fila marcada: realce visual */
+    #ColumnaRoles .input-group.acc-sel { background: #e7f3ff; border-left-color: #2f80ed; }
+    #ColumnaRoles .acc-detalle .input-group.acc-sel {
+        background: #eef6ff;
+        border-radius: 4px;
+    }
+
+    #ColumnaRoles input[type="checkbox"] { cursor: pointer; margin: 0; }
+
+    /* Controles "Marcar / Desmarcar todo" */
+    .acc-toolbar { margin: 6px 0 4px; }
+    .acc-toolbar .input-group { display: inline-flex; align-items: center; margin-right: 22px; }
+    .acc-toolbar label { cursor: pointer; margin: 0 0 0 8px; }
+    </style>
+
+    <div class="c-content-center modern-page">
+        <ul class="nav nav-tabs" style="">
+            <li onclick="tab_datosclick();" class="active">
+            <a data-toggle="tab" class="tabcito" href="#Datos">Datos</a></li>
+            <li onclick="tab_datosclick();">
+            <a data-toggle="tab" href="#Accesos" class="tabcito">Accesos</a></li>
+            <li onclick="tab_listaclick();">
+            <a data-toggle="tab" href="#Lista" class="tabcito">Lista</a></li>
+        </ul>
+        <div class="tab-content">
+            <!-- DATOS -->
+            <div id="Datos" class="tab-pane in active " style="padding: 13px;">
+
+                <h4 style="border-bottom: groove; margin-bottom: 30px; margin-top: 30px; width:60%;">Información General</h4>
+
+                <div class="row" style="margin-top: 20px;">
+                    <div class="col-sm-6 col-xs-12">
+                        <label class="col-sm-2 moderno_lb">
+                            Código</label>
+                        <div class="col-sm-10">
+                            <input id="tb_codigo" onclick="ObtenerNombreColumna(this)" class=" limpiar form-control moderno_tb" maxlength="3" disabled />
+                        </div>
+                    </div>
+                    <div class="col-sm-6 col-xs-12">
+                        <label class="col-sm-2 moderno_lb" >
+                            Nombre*</label>
+                        <div class="col-sm-10">
+                            <input id="tb_descripcion" class="disabled limpiar form-control moderno_tb" disabled onclick="ObtenerNombreColumna(this)" />
+                        </div>
+                    </div>
+                </div>
+                <div class="row" style="margin-top: 20px;">
+                    <div class="col-sm-6 col-xs-12">
+                        <label class="col-sm-2 moderno_lb">
+                            Estado*</label>
+                        <div class="col-sm-10">
+                            <select class="disabled limpiar form-control moderno_tb" id="ddl_estado" disabled onclick="ObtenerNombreColumna(this)" >
+                            <option value ="1">Activo</option>
+                            <option value ="0">Inactivo</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+
+            </div>
+
+            <!-- ACCESOS -->
+            <div id="Accesos" class="tab-pane" style="padding: 13px;">
+             
+                <label id="lb_codigo"></label>
+
+                <p style="color:#6b7785;margin:4px 0 2px;">
+                    Marca un menú principal para conceder toda su rama, o elige
+                    páginas concretas (el menú padre se marca solo).
+                </p>
+
+                <div class="acc-toolbar">
+                    <div class="input-group">
+                            <input class="disabled" onclick="CkMarcarTodo()" type="checkbox" id="idCkMarcarTodo" disabled>
+                        <label for="idCkMarcarTodo">Marcar todo</label>
+                    </div>
+                    <div class="input-group">
+                            <input class="disabled" onclick="CkDesmarcarTodo()" type="checkbox" id="idCkDesmarcarTodo" disabled>
+                        <label for="idCkDesmarcarTodo">Desmarcar todo</label>
+                    </div>
+                </div>
+
+              <div id="ColumnaRoles" >
+                    
+            </div>
+            </div>
+            <!-- LISTADO -->
+            <div id="Lista" class="tab-pane tabcito" style="padding: 13px;">
+                <nav class="navbar navbar-default" style="margin-bottom: 0px;">
+                <div class="container-fluid">
+                    <div class="navbar-header">
+                        <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+                                <span class="sr-only">Toggle navigation</span>
+                                <span class="icon-bar"></span>
+                                <span class="icon-bar"></span>
+                                <span class="icon-bar"></span>
+                        </button>
+                    </div>
+                    <div id="navbar" class="navbar-collapse collapse navbar-right" style="margin-right: 4.5%;">
+                        <ul class="nav navbar-nav">
+                            <li class="dropdown">
+                            <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="true"><img src="<?= basePath() ?>/assets/Styles/img/filtro.png" style="WIDTH:14PX;MARGIN-RIGHT:5PX;" />FILTROS <span class="caret"></span></a>
+                            <ul class="dropdown-menu">
+                                <li><a href="#" onclick="FilterStatus(2); return false;">Activos</a></li>
+                                <li><a href="#" onclick="FilterStatus(3); return false;">Inactivos</a></li>
+                                <li role="separator" class="divider"></li>
+                                <li><a href="#" onclick="FilterStatus(1); return false;">Mostrar Todos</a></li>
+                            </ul>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+                </nav>
+                <table id="table_id" class="display" style="width:100%;">
+                <colgroup>  
+                    <col style="width:1%"></col>
+                    <col style="width:20%"></col>
+                    <col style="width:40%"></col> 
+                    <col style="width:20%"></col>  
+                </colgroup>
+                    <thead id="thTablaRoles">
+                        <tr>
+                            <th></th>
+                            <th>
+                                Código
+                            </th>
+                            <th>
+                                Nombre
+                            </th>
+                            <th>
+                                Estado
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody ondblclick="table_two_click(this);" >
+
+                    </tbody>
+                </table>
+            </div>
+ 
+            </div>
+        </div>
+
+             <!--Tabla para exportar a exel-->
+                <div id="tablePrincipalExportExel" style="display:none;" > 
+                <table id="tablaRoles"  class="table table-bordered TablaIndex table-striped dataTable no-footer" border="2px" cellspacing="0" width="2000" >
+                    <thead >
+                        <tr>
+                           <th>
+                                Código
+                            </th>
+                            <th>
+                                Nombre
+                            </th>
+                            <th>
+                                Estado
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody >
+
+                    </tbody>
+                </table>
+                </div>
+<?php $pageContent = ob_get_clean(); require_once __DIR__ . '/../../includes/layout_master.php'; ?>

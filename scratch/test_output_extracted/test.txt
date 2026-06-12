@@ -1,0 +1,1 @@
+Hello world from pure PHP ZIP!
